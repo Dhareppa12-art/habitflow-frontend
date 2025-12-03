@@ -1,0 +1,126 @@
+<div class="habits-container">
+
+  <!-- Header -->
+  <div class="habits-header">
+    <h1 class="page-title">Habits</h1>
+
+    <button mat-raised-button color="primary" (click)="goToNewHabit()">
+      + Add New Habit
+    </button>
+  </div>
+
+  <!-- Loading / empty / error states -->
+  <div *ngIf="loading" class="info-text">
+    Loading your habits...
+  </div>
+
+  <div *ngIf="!loading && habits?.length === 0" class="info-text">
+    You don’t have any habits yet. Create your first habit to get started!
+  </div>
+
+  <div *ngIf="errorMsg" class="error-text">
+    {{ errorMsg }}
+  </div>
+
+  <!-- Habits grid -->
+  <div class="habits-grid" *ngIf="!loading && habits && habits.length">
+
+    <mat-card
+      class="habit-card"
+      *ngFor="let habit of habits"
+      (click)="openHabit(habit)"
+    >
+      <!-- Top row: title + actions -->
+      <div class="habit-card-header">
+        <div>
+
+          <!-- title + done-today badge -->
+          <div class="habit-title-row">
+            <h2 class="habit-title">{{ habit.title }}</h2>
+
+            <span
+              *ngIf="isCompletedToday(habit)"
+              class="today-badge"
+            >
+              <mat-icon>check_circle</mat-icon>
+              Done today
+            </span>
+          </div>
+
+          <p class="habit-description" *ngIf="habit.description">
+            {{ habit.description }}
+          </p>
+        </div>
+
+        <div class="habit-actions">
+          <button
+            mat-icon-button
+            (click)="openHabit(habit); $event.stopPropagation()"
+            matTooltip="View details"
+          >
+            <mat-icon>open_in_new</mat-icon>
+          </button>
+
+          <button
+            mat-icon-button
+            color="warn"
+            (click)="deleteHabit(habit, $event)"
+            matTooltip="Delete habit"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Chips row: modern Pending + Streak -->
+      <div class="habit-meta">
+        <mat-chip-listbox>
+
+          <!-- Pending / Done chip -->
+          <mat-chip
+            class="status-chip"
+            [ngClass]="isCompletedToday(habit) ? 'chip-done' : 'chip-pending'"
+          >
+            <mat-icon>
+              {{ isCompletedToday(habit) ? 'check_circle' : 'radio_button_unchecked' }}
+            </mat-icon>
+            {{ isCompletedToday(habit) ? 'Done Today' : 'Pending' }}
+          </mat-chip>
+
+          <!-- Streak chip -->
+          <mat-chip class="status-chip chip-streak">
+            <mat-icon>trending_up</mat-icon>
+            {{ getStreak(habit) }}-day streak
+          </mat-chip>
+
+        </mat-chip-listbox>
+      </div>
+
+      <!-- Footer: last completed + mark done button -->
+      <div class="habit-footer">
+        <div class="habit-status">
+          Last completed:
+          <ng-container *ngIf="habit.completedDates as completedDates; else neverTpl">
+            {{
+              completedDates[completedDates.length - 1]
+                | date : 'MMM d'
+            }}
+          </ng-container>
+          <ng-template #neverTpl>Never</ng-template>
+        </div>
+
+        <button
+          mat-raised-button
+          color="primary"
+          class="mark-done-btn"
+          [disabled]="isCompletedToday(habit)"
+          (click)="markDone(habit, $event)"
+        >
+          {{ isCompletedToday(habit) ? 'Done for today' : 'Mark done today' }}
+        </button>
+      </div>
+
+    </mat-card>
+
+  </div>
+</div>

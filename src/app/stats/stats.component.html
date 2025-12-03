@@ -1,0 +1,146 @@
+<div class="stats-page">
+
+  <!-- Header -->
+  <div class="stats-header">
+    <div>
+      <h1 class="stats-title">Stats &amp; Insights</h1>
+      <p class="stats-subtitle">
+        Understand your habit progress and streaks at a glance.
+      </p>
+    </div>
+  </div>
+
+  <!-- Top summary cards -->
+  <div class="stats-summary-grid">
+    <!-- Completion rate -->
+    <section class="stat-card stat-card--green fade-up">
+      <div class="stat-card-label">Completion rate</div>
+      <div class="stat-card-main">
+        <span class="stat-card-value">{{ completionRate || 0 }}</span>
+        <span class="stat-card-unit">%</span>
+      </div>
+      <p class="stat-card-sub">Average over the last 30 days</p>
+    </section>
+
+    <!-- Active habits -->
+    <section class="stat-card stat-card--blue fade-up">
+      <div class="stat-card-label">Active habits</div>
+      <div class="stat-card-main">
+        <span class="stat-card-value">{{ activeHabits || 0 }}</span>
+      </div>
+      <p class="stat-card-sub">Habits you are currently tracking</p>
+    </section>
+
+    <!-- Best streak -->
+    <section class="stat-card stat-card--orange fade-up">
+      <div class="stat-card-label">Best streak</div>
+      <div class="stat-card-main">
+        <span class="stat-card-value">{{ bestStreak || 0 }}</span>
+        <span class="stat-card-unit">days</span>
+      </div>
+      <p class="stat-card-sub">Longest run without breaking</p>
+    </section>
+  </div>
+
+  <!-- Middle row: week/month + top habits -->
+  <div class="stats-main-grid">
+
+    <!-- This week / month panel -->
+    <section class="stats-panel stats-panel--wide">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">This week</h2>
+          <p class="panel-subtitle">Check-ins per day</p>
+        </div>
+
+        <!-- Week / Month pills -->
+        <div class="pill-switch">
+          <button
+            class="pill-btn"
+            [class.pill-btn--active]="viewMode === 'week'"
+            (click)="setViewMode('week')"
+          >
+            Week
+          </button>
+          <button
+            class="pill-btn"
+            [class.pill-btn--active]="viewMode === 'month'"
+            (click)="setViewMode('month')"
+          >
+            Month
+          </button>
+        </div>
+      </div>
+
+      <!-- WEEK VIEW -->
+      <div *ngIf="viewMode === 'week'" class="time-view fade-up">
+        <div class="week-row">
+          <div class="week-day" *ngFor="let day of weeklyData">
+            <div class="week-label">{{ day.label }}</div>
+            <div class="week-count">{{ day.count }}</div>
+          </div>
+        </div>
+        <p class="chart-footnote">
+          Each value shows how many habits you completed on that day.
+        </p>
+      </div>
+
+      <!-- MONTH VIEW -->
+      <div *ngIf="viewMode === 'month'" class="time-view fade-up">
+        <div class="week-row">
+          <div class="week-day" *ngFor="let wk of monthlyData">
+            <div class="week-label">{{ wk.label }}</div>
+            <div class="week-count">{{ wk.count }}</div>
+          </div>
+        </div>
+        <p class="chart-footnote">
+          Each value shows total completions for that week this month.
+        </p>
+      </div>
+    </section>
+
+    <!-- Top habits panel -->
+    <section class="stats-panel stats-panel--narrow fade-up">
+      <h2 class="panel-title">Top habits</h2>
+      <p class="panel-subtitle">By total completions</p>
+
+      <div class="top-habit" *ngFor="let habit of topHabits">
+        <div class="top-habit-main">
+          <div class="top-habit-name">{{ habit.name }}</div>
+          <div class="top-habit-meta">
+            {{ habit.streak }} • {{ habit.total }}
+          </div>
+        </div>
+
+        <div class="top-habit-progress">
+          <div
+            class="top-habit-bar animated-bar"
+            [style.--value]="habit.percent + '%'"
+          ></div>
+        </div>
+      </div>
+
+      <p class="top-habit-footnote">
+        Progress bars are relative to your most completed habit.
+      </p>
+    </section>
+
+  </div>
+
+  <!-- AI insights -->
+  <section class="ai-insights fade-up">
+    <div class="ai-insights-header">
+      <span class="ai-badge">✨ AI insights</span>
+      <span class="ai-caption">
+        Simple takeaways that describe your current habit patterns.
+      </span>
+    </div>
+
+    <ul class="ai-list">
+      <li class="ai-item" *ngFor="let insight of quickInsights">
+        {{ insight }}
+      </li>
+    </ul>
+  </section>
+
+</div>

@@ -1,0 +1,216 @@
+/* Container and header */
+
+.habits-container {
+  padding: 24px 40px;
+}
+
+.habits-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Info / error texts */
+
+.info-text {
+  margin-top: 16px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.error-text {
+  margin-top: 16px;
+  font-size: 14px;
+  color: #dc2626;
+}
+
+/* Grid layout */
+
+.habits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  margin-top: 16px;
+}
+
+/* Card base + hover */
+
+.habit-card {
+  padding: 20px 24px;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px solid #eef0ff; /* soft border like profile card */
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.06);
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.habit-card:hover {
+  transform: translateY(-3px);
+  border-color: #d6dfff;
+  background: #fbfcff;
+  box-shadow: 0 22px 48px rgba(15, 23, 42, 0.09);
+}
+
+/* Header */
+
+.habit-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+/* Title row + Done today badge */
+
+.habit-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.habit-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.today-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #e6f6ec;
+  color: #16744a;
+}
+
+.today-badge mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+}
+
+.habit-description {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* Actions */
+
+.habit-actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+/* Modern Chips UI */
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px !important;
+  border-radius: 50px !important;
+  font-size: 13px !important;
+  font-weight: 500;
+  min-height: 32px !important;
+}
+
+/* Pending chip */
+.chip-pending {
+  background: #fff5e9 !important;
+  color: #b06000 !important;
+}
+
+.chip-pending mat-icon {
+  color: #d47b00 !important;
+}
+
+/* Done Today chip */
+.chip-done {
+  background: #e8f8ef !important;
+  color: #056f3d !important;
+}
+
+.chip-done mat-icon {
+  color: #079e52 !important;
+}
+
+/* Streak chip */
+.chip-streak {
+  background: #eef3ff !important;
+  color: #2744c1 !important;
+}
+
+.chip-streak mat-icon {
+  color: #3a57ff !important;
+}
+
+.habit-meta {
+  margin: 8px 0 12px;
+}
+
+/* Footer */
+
+.habit-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.habit-status {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* Make all "Mark done today" buttons same width */
+
+.mark-done-btn {
+  min-width: 170px;
+  justify-content: center;
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+  .habits-container {
+    padding: 16px;
+  }
+
+  .habits-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .habit-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .habits-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .mark-done-btn {
+    width: 100%;
+  }
+}

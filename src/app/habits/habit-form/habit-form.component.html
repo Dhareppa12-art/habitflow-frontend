@@ -1,0 +1,180 @@
+<div class="habit-form-page">
+  <mat-card class="habit-form-card">
+
+    <!-- Header -->
+    <div class="form-header">
+      <h1 class="form-title">
+        {{ isEdit ? 'Edit Habit' : 'Create Habit' }}
+      </h1>
+      <p class="form-subtitle">
+        Define a simple, clear habit you want to build consistently.
+      </p>
+    </div>
+
+    <!-- Error message -->
+    <div *ngIf="errorMsg" class="form-error">
+      {{ errorMsg }}
+    </div>
+
+    <!-- Form -->
+    <form (ngSubmit)="onSubmit()">
+
+      <!-- Title -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Title</mat-label>
+        <input
+          matInput
+          placeholder="e.g. Morning Workout"
+          [(ngModel)]="model.title"
+          name="title"
+          required
+        />
+      </mat-form-field>
+
+      <!-- Description -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Description (optional)</mat-label>
+        <textarea
+          matInput
+          rows="3"
+          placeholder="Add a short description..."
+          [(ngModel)]="model.description"
+          name="description"
+        ></textarea>
+      </mat-form-field>
+
+      <!-- Frequency + Time row -->
+      <div class="row">
+        <!-- Frequency -->
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Frequency</mat-label>
+          <mat-select
+            [(ngModel)]="model.frequency"
+            name="frequency"
+          >
+            <mat-option value="daily">Daily</mat-option>
+            <mat-option value="weekly">Weekly</mat-option>
+            <mat-option value="custom">Custom (choose days)</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Time of day -->
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Time of day (optional)</mat-label>
+          <input
+            matInput
+            type="time"
+            [(ngModel)]="model.timeOfDay"
+            name="timeOfDay"
+          />
+        </mat-form-field>
+      </div>
+
+      <!-- Days selector (for weekly/custom) -->
+      <div
+        class="days-section"
+        *ngIf="model.frequency === 'weekly' || model.frequency === 'custom'"
+      >
+        <div class="days-label">
+          Days
+        </div>
+
+        <div class="days-chips">
+          <button
+            type="button"
+            class="day-chip"
+            [class.selected]="isDaySelected(0)"
+            (click)="toggleDay(0)"
+          >
+            Sun
+          </button>
+
+          <button
+            type="button"
+            class="day-chip"
+            [class.selected]="isDaySelected(1)"
+            (click)="toggleDay(1)"
+          >
+            Mon
+          </button>
+
+          <button
+            type="button"
+            class="day-chip"
+            [class.selected]="isDaySelected(2)"
+            (click)="toggleDay(2)"
+          >
+            Tue
+          </button>
+
+          <button
+            type="button"
+            class="day-chip"
+            [class.selected]="isDaySelected(3)"
+            (click)="toggleDay(3)"
+          >
+            Wed
+          </button>
+
+          <button
+            type="button"
+            class="day-chip"
+            [class.selected]="isDaySelected(4)"
+            (click)="toggleDay(4)"
+          >
+            Thu
+          </button>
+
+          <button
+            type="button"
+            class="day-chip"
+            [class.selected]="isDaySelected(5)"
+            (click)="toggleDay(5)"
+          >
+            Fri
+          </button>
+
+          <button
+            type="button"
+            class="day-chip"
+            [class.selected]="isDaySelected(6)"
+            (click)="toggleDay(6)"
+          >
+            Sat
+          </button>
+        </div>
+      </div>
+
+      <!-- Reminder toggle -->
+      <div class="reminder-row">
+        <mat-slide-toggle
+          [(ngModel)]="model.reminder"
+          name="reminder"
+        >
+          Enable reminder (UI only for now)
+        </mat-slide-toggle>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="onCancel()"
+          [disabled]="isSubmitting"
+        >
+          Cancel
+        </button>
+
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="isSubmitting"
+        >
+          {{ isEdit ? 'Save changes' : 'Create Habit' }}
+        </button>
+      </div>
+    </form>
+  </mat-card>
+</div>

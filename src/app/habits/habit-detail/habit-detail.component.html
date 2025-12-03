@@ -1,0 +1,99 @@
+<!-- src/app/habits/habit-detail/habit-detail.component.html -->
+
+<div class="habit-detail-page">
+
+  <!-- Loading / error state -->
+  <ng-container *ngIf="loading || errorMsg; else detailTpl">
+    <div *ngIf="loading" class="info-text">Loading habit details...</div>
+    <div *ngIf="!loading && errorMsg" class="error-text">{{ errorMsg }}</div>
+  </ng-container>
+
+  <!-- Main detail card -->
+  <ng-template #detailTpl>
+    <mat-card class="detail-card" *ngIf="habit">
+
+      <!-- Header -->
+      <div class="detail-header">
+        <div class="header-left">
+          <button mat-button class="back-btn" (click)="goBack()">
+            ← Back
+          </button>
+
+          <div>
+            <h1 class="habit-title">{{ habit.title }}</h1>
+            <p class="habit-description" *ngIf="habit.description">
+              {{ habit.description }}
+            </p>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="markDoneToday()"
+            [disabled]="doneToday"
+          >
+            {{ doneToday ? 'Done for today' : 'Mark Done Today' }}
+          </button>
+
+          <button
+            mat-stroked-button
+            color="warn"
+            (click)="deleteHabit()"
+          >
+            Delete Habit
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <mat-card class="stat-card">
+          <div class="stat-label">CURRENT STREAK</div>
+          <div class="stat-value">{{ currentStreak }} days</div>
+          <div class="stat-hint">Keep the chain going 🔥</div>
+        </mat-card>
+
+        <mat-card class="stat-card">
+          <div class="stat-label">TOTAL COMPLETIONS</div>
+          <div class="stat-value">{{ totalCompletions }}</div>
+          <div class="stat-hint">Total times you did this habit</div>
+        </mat-card>
+
+        <mat-card class="stat-card">
+          <div class="stat-label">LAST COMPLETED</div>
+          <div class="stat-value">
+            <ng-container *ngIf="lastCompletedRaw; else neverTpl">
+              {{ lastCompletedRaw | date : 'MMM d' }}
+            </ng-container>
+            <ng-template #neverTpl>Never</ng-template>
+          </div>
+          <div class="stat-hint">Most recent completion date</div>
+        </mat-card>
+      </div>
+
+      <!-- Last 7 days -->
+      <section class="last7-section">
+        <h2 class="section-title">Last 7 Days</h2>
+        <p class="section-subtitle">
+          Days highlighted in green are days you completed this habit.
+        </p>
+
+        <div class="last7-grid">
+          <div
+            class="day-pill"
+            *ngFor="let day of last7Days"
+            [class.completed]="day.completed"
+          >
+            <span class="day-label">{{ day.label }}</span>
+            <span class="day-dot">
+              <span *ngIf="day.completed">●</span>
+            </span>
+          </div>
+        </div>
+      </section>
+
+    </mat-card>
+  </ng-template>
+</div>

@@ -1,0 +1,148 @@
+<div class="coach-page">
+  <mat-card class="coach-shell">
+
+    <!-- PAGE HEADER -->
+    <header class="coach-header">
+      <div>
+        <h1 class="coach-title">Coach</h1>
+        <p class="coach-subtitle">
+          Get simple, data-aware nudges to keep your habits on track.
+        </p>
+      </div>
+
+      <div class="status-pill">
+        <span class="dot"></span>
+        Coach is ready
+      </div>
+    </header>
+
+    <section class="coach-layout">
+
+      <!-- QUICK QUESTIONS -->
+      <div class="quick-row">
+        <span class="quick-label">Quick questions</span>
+        <div class="quick-chips">
+          <button
+            *ngFor="let p of quickPrompts"
+            type="button"
+            class="quick-chip"
+            (click)="useQuickPrompt(p)"
+          >
+            {{ p }}
+          </button>
+        </div>
+      </div>
+
+      <!-- CHAT CARD -->
+      <section class="chat-card">
+
+        <!-- COACH HEADER (no static subtitle) -->
+        <header class="chat-header">
+          <div class="chat-header-left">
+            <div class="coach-avatar">
+              <mat-icon>auto_awesome</mat-icon>
+            </div>
+            <div>
+              <h2>Coach</h2>
+            </div>
+          </div>
+        </header>
+
+        <!-- CHAT WINDOW -->
+        <div class="chat-window" #chatWindow>
+
+          <div
+            *ngFor="let msg of messages; let i = index"
+            class="chat-message"
+            [class.chat-message--coach]="msg.from === 'coach'"
+            [class.chat-message--user]="msg.from === 'user'"
+            [class.chat-intro]="i === 0 && msg.from === 'coach'"
+          >
+            <div class="chat-meta">
+              <span>{{ msg.from === 'coach' ? 'Coach' : 'You' }}</span>
+              ·
+              <span>{{ msg.ts | date: 'shortTime' }}</span>
+            </div>
+
+            <div class="chat-bubble">
+              <!-- COLLAPSED VERSION -->
+              <ng-container *ngIf="!msg.expanded; else expandedBlock">
+                {{ getPreview(msg.text) }}
+                <span
+                  *ngIf="msg.text.length > previewLimit"
+                  class="show-more"
+                  (click)="toggleExpand(msg)"
+                >
+                  Show more…
+                </span>
+              </ng-container>
+
+              <!-- EXPANDED VERSION -->
+              <ng-template #expandedBlock>
+                {{ msg.text }}
+                <span class="show-more" (click)="toggleExpand(msg)">
+                  Show less
+                </span>
+              </ng-template>
+            </div>
+          </div>
+
+          <!-- EMPTY STATE -->
+          <div *ngIf="messages.length === 0 && !sending" class="chat-empty">
+            Try: <strong>“Help me build a reading habit”</strong> or
+            <strong>“How do I stay consistent?”</strong>
+          </div>
+
+          <!-- TYPING INDICATOR -->
+          <div *ngIf="sending" class="typing-indicator">
+            <span></span><span></span><span></span>
+            <span class="typing-text">Coach is thinking…</span>
+          </div>
+        </div>
+
+        <!-- INPUT ROW -->
+        <form
+          class="chat-input-row"
+          (ngSubmit)="sendPrompt()"
+          autocomplete="off"
+        >
+          <div class="input-shell">
+            <textarea
+              rows="1"
+              [(ngModel)]="inputText"
+              name="coachQuestion"
+              class="chat-textarea"
+              placeholder="Type or use the mic to ask the coach anything about your habits…"
+              (keydown.enter)="onEnter($event)"
+            ></textarea>
+
+            <button
+              mat-mini-fab
+              type="button"
+              class="mic-btn"
+              [class.mic-btn--listening]="isListening"
+              (click)="toggleListening()"
+              [disabled]="!recognition"
+            >
+              <mat-icon *ngIf="!isListening">mic</mat-icon>
+              <mat-icon *ngIf="isListening">stop</mat-icon>
+            </button>
+          </div>
+
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            class="send-button"
+            [disabled]="!inputText.trim() || sending"
+          >
+            <mat-icon *ngIf="!sending">send</mat-icon>
+            <mat-icon *ngIf="sending">hourglass_top</mat-icon>
+            <span>{{ sending ? 'Thinking…' : 'Send' }}</span>
+          </button>
+        </form>
+
+      </section>
+    </section>
+  </mat-card>
+</div>

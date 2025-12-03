@@ -1,0 +1,113 @@
+<div class="calendar-page">
+  <mat-card class="calendar-card">
+
+    <!-- Header -->
+    <div class="calendar-header">
+      <div>
+        <h1 class="page-title">Calendar</h1>
+        <p class="page-subtitle">
+          See how consistent you’ve been this month.
+        </p>
+      </div>
+
+      <div class="month-controls">
+        <button mat-icon-button (click)="prevMonth()">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <div class="month-label">{{ monthLabel }}</div>
+        <button mat-icon-button (click)="nextMonth()">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-row" *ngIf="!loading">
+      <div class="summary-card">
+        <div class="summary-label">Completions</div>
+        <div class="summary-value">{{ monthTotalCompletions }}</div>
+        <div class="summary-hint">Total check-ins this month</div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-label">Active days</div>
+        <div class="summary-value">{{ monthActiveDays }}</div>
+        <div class="summary-hint">Days with at least 1 completion</div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-label">Best day</div>
+        <div class="summary-value">{{ monthBestDayCount }}</div>
+        <div class="summary-hint">Max completions on a single day</div>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="info-text">
+      Loading calendar…
+    </div>
+
+    <!-- Calendar grid -->
+    <div *ngIf="!loading" class="calendar-grid">
+
+      <!-- Weekday names -->
+      <div class="weekday-row">
+        <div class="weekday" *ngFor="let wd of ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']">
+          {{ wd }}
+        </div>
+      </div>
+
+      <!-- Weeks -->
+      <div class="weeks">
+        <div class="week-row" *ngFor="let week of weeks">
+          <div
+            class="day-cell"
+            *ngFor="let day of week"
+            [class.outside-month]="!day.inCurrentMonth"
+            [class.today]="day.isToday"
+            [ngClass]="{
+              'level-0': day.totalCompletions === 0,
+              'level-1': day.totalCompletions > 0 && day.totalCompletions <= 2,
+              'level-2': day.totalCompletions >= 3
+            }"
+          >
+            <div class="day-number-row">
+              <div class="day-number">{{ day.date.getDate() }}</div>
+              <span class="today-pill" *ngIf="day.isToday">Today</span>
+            </div>
+
+            <div class="day-badge" *ngIf="day.totalCompletions > 0">
+              {{ day.totalCompletions }}x
+            </div>
+
+            <div
+              class="day-dot"
+              *ngIf="day.totalCompletions === 0 && day.inCurrentMonth"
+            ></div>
+
+            <div class="day-tooltip" *ngIf="day.totalCompletions > 0">
+              <div class="tooltip-title">
+                {{ day.totalCompletions }} completions
+              </div>
+              <div class="tooltip-item" *ngFor="let h of day.completedHabits">• {{ h.title }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="legend-row">
+        <div class="legend-left">
+          <div class="legend-item"><span class="legend-box empty"></span>No completions</div>
+          <div class="legend-item"><span class="legend-box low"></span>1–2 completions</div>
+          <div class="legend-item"><span class="legend-box high"></span>3+ completions</div>
+        </div>
+
+        <div class="legend-right" *ngIf="!hasAnyCompletion">
+          No activity yet this month. Complete any habit to see days light up ✨
+        </div>
+      </div>
+
+    </div>
+  </mat-card>
+</div>

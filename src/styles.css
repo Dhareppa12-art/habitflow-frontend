@@ -1,1 +1,56 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global reset (keep this part) */
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+/* =========================================================
+   HabitFlow Global Themable Variables
+   These apply to EVERY page (Dashboard, Habits, Calendar, Stats, Profile)
+   ========================================================= */
+
+/* Light theme – DEFAULT */
+body,
+body.hf-theme-light {
+  --hf-page-bg: #f3f4ff;          /* soft gray-blue */
+  --hf-card-bg: #ffffff;
+  --hf-card-surface: #ffffff;
+  --hf-text-main: #111827;
+  --hf-text-muted: #6b7280;
+  --hf-border-subtle: #e5e7eb;
+  --hf-input-bg: #f9fafb;
+  --hf-chip-bg: #f9fafb;
+  --hf-sidebar-bg: #ffffff;
+  --hf-sidebar-active-bg: #111827;
+  --hf-sidebar-active-text: #ffffff;
+  --hf-primary: #2563eb;          /* blue buttons */
+  background-color: var(--hf-page-bg);
+  color: var(--hf-text-main);
+}
+
+/* Dark theme */
+body.hf-theme-dark {
+  --hf-page-bg: #0b1221;         /* deep navy */
+  --hf-card-bg: #0f172a;         /* slate-900 */
+  --hf-card-surface: #1e293b;    /* slate-800 */
+  --hf-text-main: #e5e7eb;
+  --hf-text-muted: #9ca3af;
+  --hf-border-subtle: #334155;
+  --hf-input-bg: #1e293b;
+  --hf-chip-bg: #1e293b;
+  --hf-sidebar-bg: #0f172a;
+  --hf-sidebar-active-bg: #2563eb;
+  --hf-sidebar-active-text: #ffffff;
+  --hf-primary: #3b82f6;
+  background-color: var(--hf-page-bg);
+  color: var(--hf-text-main);
+}
+
+/* Smooth theme switching */
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}

@@ -1,0 +1,90 @@
+<div class="dashboard-container">
+
+  <!-- Header -->
+  <div class="dashboard-header">
+    <h1 class="page-title">Dashboard</h1>
+    <p class="welcome-text">
+      {{ greeting }}, {{ userName }} 👋
+    </p>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-grid">
+
+    <!-- Total Habits -->
+    <mat-card class="summary-card summary-total">
+      <div class="summary-card-header">
+        <div class="summary-icon">
+          <mat-icon>checklist</mat-icon>
+        </div>
+        <div>
+          <div class="summary-label">Total Habits</div>
+          <div class="summary-value">{{ totalHabits || 0 }}</div>
+        </div>
+      </div>
+      <div class="summary-sub">Active habits you're tracking</div>
+    </mat-card>
+
+    <!-- Today's Completions -->
+    <mat-card class="summary-card summary-today">
+      <div class="summary-card-header">
+        <div class="summary-icon">
+          <mat-icon>today</mat-icon>
+        </div>
+        <div>
+          <div class="summary-label">Today's Completions</div>
+          <div class="summary-value">{{ todaysCompletions || 0 }}</div>
+        </div>
+      </div>
+      <div class="summary-sub">Completed today</div>
+    </mat-card>
+
+    <!-- Completion Rate -->
+    <mat-card class="summary-card summary-rate">
+      <div class="summary-card-header">
+        <div class="summary-icon">
+          <mat-icon>percent</mat-icon>
+        </div>
+        <div>
+          <div class="summary-label">Completion Rate</div>
+          <div class="summary-value">
+            {{ completionRate || 0 }}
+            <span class="summary-unit">%</span>
+          </div>
+        </div>
+      </div>
+      <div class="summary-sub">All-time average</div>
+    </mat-card>
+
+    <!-- Best Streak -->
+    <mat-card class="summary-card summary-streak">
+      <div class="summary-card-header">
+        <div class="summary-icon">
+          <mat-icon>local_fire_department</mat-icon>
+        </div>
+        <div>
+          <div class="summary-label">Best Streak</div>
+          <div class="summary-value">{{ bestStreak || 0 }}</div>
+        </div>
+      </div>
+      <div class="summary-sub">Your longest run</div>
+    </mat-card>
+
+  </div>
+
+  <!-- Actions -->
+  <div class="actions-row">
+    <button mat-raised-button color="primary" routerLink="/app/habits/new">
+      + Add New Habit
+    </button>
+
+    <button mat-stroked-button color="primary" routerLink="/app/habits">
+      Open Habits
+    </button>
+
+    <button mat-stroked-button color="primary" routerLink="/app/calendar">
+      Open Calendar
+    </button>
+  </div>
+
+</div>

@@ -1,0 +1,184 @@
+<!-- src/app/support/support.component.html -->
+<div class="support-page">
+
+  <!-- HEADER -->
+  <header class="support-header">
+    <div>
+      <h1 class="support-title">Customer Support</h1>
+      <p class="support-sub">
+        Need help with HabitFlow? Reach out directly to the developer. I usually reply within a few hours on working days.
+      </p>
+    </div>
+
+    <div class="support-tag">
+      <span class="dot online"></span>
+      Demo environment · Messages stay only in your browser
+    </div>
+  </header>
+
+  <!-- MAIN GRID -->
+  <div class="support-grid">
+
+    <!-- LEFT: DEVELOPER CARD -->
+    <section class="info-card">
+      <div class="dev-header">
+        <div class="avatar-circle">
+          <span>D</span>
+        </div>
+        <div>
+          <h2 class="dev-name">Dhareppa</h2>
+          <p class="dev-role">Full-Stack Developer &amp; SRE</p>
+          <div class="dev-tags">
+            <span class="chip chip-primary">HabitFlow creator</span>
+            <span class="chip chip-soft">Typically replies in a few hours</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Support details -->
+      <div class="info-section">
+        <h3 class="info-section-title">Support details</h3>
+        <div class="info-rows">
+          <div class="info-row">
+            <span class="label">Email</span>
+            <span class="value">dhareppabistagond17@gmail.com</span>
+          </div>
+
+          <div class="info-row">
+            <span class="label">Support hours</span>
+            <span class="value">Mon – Fri · 10:00 AM – 6:00 PM (IST)</span>
+          </div>
+
+          <div class="info-row">
+            <span class="label">Location</span>
+            <span class="value">Bengaluru, India</span>
+          </div>
+
+          <div class="info-row">
+            <span class="label">Time zone</span>
+            <span class="value">IST (UTC +05:30)</span>
+          </div>
+
+          <div class="info-row">
+            <span class="label">Average response</span>
+            <span class="value">Within a few hours on working days</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project info -->
+      <div class="info-section">
+        <h3 class="info-section-title">About this project</h3>
+
+        <ul class="info-list">
+          <li>HabitFlow is a personal side-project built to explore habit tracking, streaks and daily routines.</li>
+          <li>This support page is a demo – your messages are stored locally in your browser and never leave your device.</li>
+          <li>The goal of this module is to showcase real-world product thinking, UX and full-stack implementation.</li>
+        </ul>
+
+        <p class="info-note">
+          In a production setup, this page would be connected to a ticketing tool (like Zendesk / Help Scout) or send
+          messages directly to email / Slack so they can be tracked and replied to.
+        </p>
+      </div>
+    </section>
+
+    <!-- RIGHT: FORM CARD -->
+    <section class="form-card">
+      <h2 class="form-title">Send a message</h2>
+      <p class="form-sub">
+        Tell me what’s going wrong, what feels confusing, or which feature you’d love to see in HabitFlow.
+      </p>
+
+      <form (ngSubmit)="onSubmit()">
+        <div class="field-row">
+          <div class="field">
+            <label>Your name</label>
+            <input
+              type="text"
+              [(ngModel)]="name"
+              name="name"
+              placeholder="How should I address you?"
+            />
+          </div>
+
+          <div class="field">
+            <label>Your email</label>
+            <input
+              type="email"
+              [(ngModel)]="email"
+              name="email"
+              placeholder="I’ll reply here (demo only)"
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Category</label>
+          <div class="select-wrapper">
+            <select [(ngModel)]="category" name="category">
+              <option *ngFor="let c of categories" [value]="c">
+                {{ c }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Message</label>
+          <textarea
+            [(ngModel)]="message"
+            name="message"
+            rows="5"
+            placeholder="Describe your issue, bug or feature request…"
+          ></textarea>
+        </div>
+
+        <div class="form-footer">
+          <button
+            type="submit"
+            class="primary-btn"
+            [disabled]="!message.trim() || submitting"
+          >
+            {{ submitting ? 'Sending…' : 'Send message' }}
+          </button>
+
+          <p class="success" *ngIf="successMsg">{{ successMsg }}</p>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <!-- HISTORY / LAST MESSAGES -->
+  <section class="history-card" *ngIf="messages.length">
+    <div class="history-header-row">
+      <h3>Recent messages (local demo)</h3>
+      <span class="small-pill">{{ messages.length }} logged</span>
+    </div>
+
+    <div class="history-item" *ngFor="let m of messages">
+      <div class="history-top">
+        <div>
+          <span class="history-name">{{ m.name }}</span>
+          <span class="history-email">{{ m.email }}</span>
+        </div>
+        <span class="history-time">
+          {{ m.createdAt | date: 'MMM d, y · h:mm a' }}
+        </span>
+      </div>
+
+      <div class="history-meta">
+        <span class="history-category">{{ m.category }}</span>
+      </div>
+
+      <p class="history-text">
+        {{ m.message }}
+      </p>
+    </div>
+  </section>
+
+  <!-- FOOTER CREDIT -->
+  <p class="credit">
+    Built with ❤️ by <strong>Dhareppa</strong> · HabitFlow customer support (demo)
+  </p>
+</div>

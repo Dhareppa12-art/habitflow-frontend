@@ -1,0 +1,162 @@
+/* ---------------- ROOT LAYOUT ---------------- */
+.app-shell {
+  min-height: 100vh;
+  background: #f3f4ff;
+  display: flex;
+}
+
+/* ---------------- SIDEBAR ---------------- */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+
+  width: 260px;
+  padding: 24px 20px 32px;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* BRAND */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.brand-icon {
+  font-size: 22px;
+  color: #f97316;
+}
+
+.brand-text {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* NAV */
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 9999px;
+
+  font-size: 15px;
+  color: #111827;
+  text-decoration: none;
+  cursor: pointer;
+
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.nav-item mat-icon {
+  font-size: 20px;
+}
+
+/* HOVER (default links) */
+.nav-item:hover {
+  background: #e8edff;
+}
+
+/* DEFAULT ACTIVE STATE */
+.nav-item.active {
+  background: #1118270d; /* subtle */
+  color: #111827;
+  font-weight: 600;
+}
+
+/* for regular active icons */
+.nav-item.active mat-icon {
+  color: #111827;
+}
+
+/* ---------------- SECTION LABELS ---------------- */
+.sidebar-label {
+  margin-top: 22px;
+  margin-bottom: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+  letter-spacing: 0.15em;
+}
+
+/* ---------------- SPECIAL LINKS ---------------- */
+
+/* Hover – premium subtle highlight */
+.nav-intel:hover,
+.nav-support:hover {
+  background: rgba(37, 99, 235, 0.12);
+  color: #1d4ed8;
+}
+
+.nav-intel:hover mat-icon,
+.nav-support:hover mat-icon {
+  color: #1d4ed8;
+}
+
+/* Active – PREMIUM GRADIENT PILL */
+.nav-intel.active,
+.nav-support.active {
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: #ffffff !important;
+  font-weight: 600;
+  box-shadow: 0 14px 35px rgba(37, 99, 235, 0.45);
+}
+
+.nav-intel.active mat-icon,
+.nav-support.active mat-icon {
+  color: #ffffff;
+}
+
+/* ---------------- LOGOUT BUTTON ---------------- */
+.logout-btn {
+  width: 100%;
+  padding: 12px 18px;
+  border-radius: 9999px;
+  border: 1px solid #fecaca;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  background: #fff5f5;
+  color: #b91c1c;
+  cursor: pointer;
+
+  transition: all 0.12s ease;
+}
+
+.logout-btn:hover {
+  background: #fee2e2;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(248, 113, 113, 0.35);
+}
+
+.logout-btn mat-icon {
+  color: #b91c1c;
+}
+
+/* ---------------- CONTENT AREA ---------------- */
+.content {
+  margin-left: 260px;
+  padding: 24px 32px;
+  min-height: 100vh;
+  flex: 1;
+}

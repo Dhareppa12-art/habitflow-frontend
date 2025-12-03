@@ -1,0 +1,62 @@
+<!-- app-shell.component.html -->
+<div class="app-container">
+  <!-- Sidebar -->
+  <aside class="app-sidebar">
+    <div class="sidebar-inner">
+      <div class="card-sm" style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <div style="width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,#60a5fa,#2563eb);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;">
+          HF
+        </div>
+        <div>
+          <div style="font-weight:700;">HabitFlow</div>
+          <div class="muted" style="font-size:12px;">Track. Improve. Repeat.</div>
+        </div>
+      </div>
+
+      <nav style="display:flex;flex-direction:column;gap:8px;">
+        <a routerLink="/app/dashboard" class="card-sm" style="display:flex;align-items:center;justify-content:space-between;text-decoration:none;color:inherit;">
+          <div>Dashboard</div><div class="muted">→</div>
+        </a>
+
+        <a routerLink="/app/habits" class="card-sm" style="display:flex;align-items:center;justify-content:space-between;text-decoration:none;color:inherit;">
+          <div>Habits</div><div class="muted">({{ (habitService.getHabits$() | async)?.length || 0 }})</div>
+        </a>
+
+        <a routerLink="/app/calendar" class="card-sm" style="display:flex;align-items:center;justify-content:space-between;text-decoration:none;color:inherit;">
+          <div>Calendar</div><div class="muted">📅</div>
+        </a>
+
+        <a routerLink="/app/stats" class="card-sm" style="display:flex;align-items:center;justify-content:space-between;text-decoration:none;color:inherit;">
+          <div>Stats</div><div class="muted">📈</div>
+        </a>
+
+        <a routerLink="/app/profile" class="card-sm" style="display:flex;align-items:center;justify-content:space-between;text-decoration:none;color:inherit;">
+          <div>Profile</div><div class="muted">⚙️</div>
+        </a>
+      </nav>
+
+      <div style="margin-top:18px;">
+        <button class="btn btn-primary" style="width:100%;" routerLink="/app/habits/new">+ New Habit</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div style="flex:1;">
+    <header class="app-header">
+      <div class="header-left">
+        <div class="brand">HabitFlow</div>
+        <div class="muted">• Clean SaaS</div>
+      </div>
+
+      <div class="header-actions">
+        <input class="input" placeholder="Search habits..." style="width:240px;" (input)="onSearch($event.target.value)" />
+        <button class="btn btn-ghost" (click)="toggleCollapse()">Toggle</button>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

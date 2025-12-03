@@ -1,0 +1,280 @@
+<!-- src/app/profile/profile.component.html -->
+<div class="profile-page">
+  <div class="profile-card">
+    <!-- Left vertical icon rail -->
+    <div class="profile-nav">
+      <button
+        class="nav-icon"
+        type="button"
+        [class.active]="activeSection === 'profile'"
+        (click)="setSection('profile')"
+      >
+        <mat-icon>person</mat-icon>
+      </button>
+
+      <button
+        class="nav-icon"
+        type="button"
+        [class.active]="activeSection === 'security'"
+        (click)="setSection('security')"
+      >
+        <mat-icon>lock</mat-icon>
+      </button>
+
+      <button
+        class="nav-icon"
+        type="button"
+        [class.active]="activeSection === 'notifications'"
+        (click)="setSection('notifications')"
+      >
+        <mat-icon>notifications</mat-icon>
+      </button>
+
+      <button
+        class="nav-icon"
+        type="button"
+        [class.active]="activeSection === 'settings'"
+        (click)="setSection('settings')"
+      >
+        <mat-icon>settings</mat-icon>
+      </button>
+    </div>
+
+    <!-- Main content -->
+    <div class="profile-content">
+      <!-- Header row -->
+      <div class="profile-header-row">
+        <div>
+          <h1 class="page-title">Profile</h1>
+          <p class="page-subtitle">
+            Manage your account details, security, notifications and preferences.
+          </p>
+
+          <div *ngIf="joinedAt" class="joined-text">
+            Joined: {{ joinedAt | date: 'MMM d, y' }}
+          </div>
+
+          <div *ngIf="loadingProfile" class="info-text">
+            Loading your profile…
+          </div>
+          <div *ngIf="!loadingProfile && errorMsg" class="error-text">
+            {{ errorMsg }}
+          </div>
+        </div>
+
+        <!-- Avatar block -->
+        <div class="avatar-block">
+          <ng-container *ngIf="avatarUrl; else initialsAvatar">
+            <img
+              [src]="avatarUrl"
+              alt="Avatar"
+              class="avatar-circle avatar-image"
+              (click)="openAvatarPicker(avatarInput)"
+            />
+          </ng-container>
+
+          <ng-template #initialsAvatar>
+            <div
+              class="avatar-circle"
+              (click)="openAvatarPicker(avatarInput)"
+            >
+              {{ usernameFirstLetter }}
+            </div>
+          </ng-template>
+
+          <button
+            class="avatar-camera"
+            type="button"
+            (click)="openAvatarPicker(avatarInput)"
+          >
+            <mat-icon>photo_camera</mat-icon>
+          </button>
+
+          <input
+            #avatarInput
+            type="file"
+            accept="image/*"
+            hidden
+            (change)="onAvatarSelected($event)"
+          />
+
+          <button
+            *ngIf="avatarUrl"
+            class="avatar-remove"
+            type="button"
+            (click)="clearAvatar()"
+          >
+            Remove photo
+          </button>
+        </div>
+      </div>
+
+      <!-- SECTION: Profile details -->
+      <div *ngIf="activeSection === 'profile'">
+        <h2 class="section-title">Account details</h2>
+        <p class="section-subtitle">
+          Basic information used to personalize your HabitFlow experience.
+        </p>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Name</label>
+            <input type="text" [(ngModel)]="user.name" />
+          </div>
+
+          <div class="field">
+            <label>Email</label>
+            <input type="email" [(ngModel)]="user.email" readonly />
+          </div>
+
+          <div class="field">
+            <label>Location</label>
+            <input type="text" [(ngModel)]="user.location" />
+          </div>
+
+          <div class="field">
+            <label>Phone</label>
+            <input type="text" [(ngModel)]="user.phone" />
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: Security -->
+      <div *ngIf="activeSection === 'security'">
+        <h2 class="section-title">Security</h2>
+        <p class="section-subtitle">
+          Update your password to keep your account safe.
+        </p>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Current password</label>
+            <input
+              type="password"
+              [(ngModel)]="security.currentPassword"
+            />
+          </div>
+
+          <div class="field">
+            <label>New password</label>
+            <input type="password" [(ngModel)]="security.newPassword" />
+          </div>
+
+          <div class="field">
+            <label>Confirm new password</label>
+            <input
+              type="password"
+              [(ngModel)]="security.confirmPassword"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: Notifications -->
+      <div *ngIf="activeSection === 'notifications'">
+        <h2 class="section-title">Notifications</h2>
+        <p class="section-subtitle">
+          Choose how HabitFlow keeps you on track with reminders and summaries.
+        </p>
+
+        <div class="toggles-list">
+          <label class="toggle-row">
+            <span>
+              <strong>Email reminders</strong>
+              <small>Receive emails when important habits are due.</small>
+            </span>
+            <label class="switch">
+              <input
+                type="checkbox"
+                [(ngModel)]="notify.emailReminders"
+              />
+              <span class="slider"></span>
+            </label>
+          </label>
+
+          <label class="toggle-row">
+            <span>
+              <strong>Daily check-in reminder</strong>
+              <small>Get a reminder every evening to mark your habits.</small>
+            </span>
+            <label class="switch">
+              <input
+                type="checkbox"
+                [(ngModel)]="notify.dailyReminder"
+              />
+              <span class="slider"></span>
+            </label>
+          </label>
+
+          <label class="toggle-row">
+            <span>
+              <strong>Weekly summary</strong>
+              <small>Receive a weekly progress summary.</small>
+            </span>
+            <label class="switch">
+              <input
+                type="checkbox"
+                [(ngModel)]="notify.weeklySummary"
+              />
+              <span class="slider"></span>
+            </label>
+          </label>
+        </div>
+      </div>
+
+      <!-- SECTION: App settings -->
+      <div *ngIf="activeSection === 'settings'">
+        <h2 class="section-title">App settings</h2>
+        <p class="section-subtitle">
+          Customize how HabitFlow behaves for you.
+        </p>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Time zone</label>
+            <select [(ngModel)]="settings.timezone">
+              <option value="Asia/Kolkata">Asia/Kolkata</option>
+              <option value="UTC">UTC</option>
+              <option value="America/New_York">America/New_York">
+                America/New_York
+              </option>
+              <option value="Europe/London">Europe/London</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Week starts on</label>
+            <select [(ngModel)]="settings.weekStart">
+              <option value="sunday">Sunday</option>
+              <option value="monday">Monday</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Theme</label>
+            <select
+              [(ngModel)]="settings.theme"
+              (change)="onThemeChange()"
+            >
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="system">Match system</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions-row">
+        <button
+          type="button"
+          class="save-btn"
+          (click)="onSave()"
+          [disabled]="saving || loadingProfile"
+        >
+          {{ saving ? 'Saving…' : saveLabel }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

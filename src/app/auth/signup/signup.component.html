@@ -1,0 +1,108 @@
+<div class="auth-page">
+
+  <!-- Top brand bar (same as login) -->
+  <header class="auth-header">
+    <div class="brand-left">
+      <span class="brand-icon">⚡</span>
+      <span class="brand-text">HabitFlow</span>
+    </div>
+
+    <div class="brand-right">
+      <span class="header-caption">Already have an account?</span>
+      <a routerLink="/auth/login" class="header-link">Login</a>
+    </div>
+  </header>
+
+  <!-- Center card -->
+  <main class="auth-main">
+    <section class="auth-card">
+      <h1 class="auth-title">Sign up</h1>
+      <p class="auth-subtitle">
+        Create your HabitFlow account to start tracking your habits.
+      </p>
+
+      <!-- Signup form (reactive) -->
+      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="auth-form">
+
+        <!-- Name -->
+        <div class="field">
+          <label for="name">Name*</label>
+          <input
+            id="name"
+            type="text"
+            formControlName="name"
+            placeholder="Your name"
+          />
+          <div class="field-error" *ngIf="name?.touched && name?.invalid">
+            <small *ngIf="name?.errors?.['required']">
+              Name is required
+            </small>
+            <small *ngIf="name?.errors?.['minlength']">
+              Name must be at least 2 characters
+            </small>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="field">
+          <label for="email">Email*</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="you@example.com"
+          />
+          <div class="field-error" *ngIf="email?.touched && email?.invalid">
+            <small *ngIf="email?.errors?.['required']">
+              Email is required
+            </small>
+            <small *ngIf="email?.errors?.['email']">
+              Please enter a valid email
+            </small>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="field">
+          <label for="password">Password*</label>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            placeholder="••••••••"
+          />
+          <div class="field-error" *ngIf="password?.touched && password?.invalid">
+            <small *ngIf="password?.errors?.['required']">
+              Password is required
+            </small>
+            <small *ngIf="password?.errors?.['minlength']">
+              Password must be at least 6 characters
+            </small>
+          </div>
+        </div>
+
+        <!-- Global error -->
+        <p class="auth-error" *ngIf="errorMessage">
+          {{ errorMessage }}
+        </p>
+
+        <!-- Submit button -->
+        <button
+          type="submit"
+          class="primary-btn"
+          [disabled]="signupForm.invalid || loading"
+        >
+          <span *ngIf="!loading">Sign up</span>
+          <span *ngIf="loading">Creating account...</span>
+        </button>
+      </form>
+
+      <!-- Footer -->
+      <p class="auth-footer-text">
+        Already have an account?
+        <a routerLink="/auth/login">Login</a>
+      </p>
+    </section>
+  </main>
+
+</div>

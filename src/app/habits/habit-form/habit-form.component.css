@@ -1,0 +1,199 @@
+/* ===== PAGE BACKGROUND / LAYOUT ===== */
+
+.habit-form-page {
+  min-height: calc(100vh - 80px);
+  padding: 32px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at top left, #eef3ff, #f5f6ff);
+}
+
+/* ===== CARD ===== */
+
+.habit-form-card {
+  width: 100%;
+  max-width: 760px;
+  padding: 24px 28px 26px;
+  border-radius: 22px;
+  box-shadow: 0 22px 45px rgba(15, 23, 42, 0.16);
+}
+
+/* Header */
+
+.form-header {
+  margin-bottom: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.form-subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* Error */
+
+.form-error {
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: #d32f2f;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #fef2f2;
+}
+
+/* Layout */
+
+.full-width {
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.half-width {
+  flex: 1;
+}
+
+/* Extra hints under fields */
+
+.field-hint {
+  margin: 4px 0 10px;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* Label + time input */
+
+.field-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+  display: block;
+  color: #6b7280;
+}
+
+.time-input {
+  width: 100%;
+  padding: 10px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  background-color: #f9fafb;
+}
+
+.time-input:focus {
+  border-color: #2563eb;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.4);
+}
+
+/* Days selector */
+
+.days-section {
+  margin: 16px 0 8px;
+  padding-top: 6px;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.days-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+  color: #6b7280;
+}
+
+.days-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.day-chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.day-chip:hover {
+  background: #edf2ff;
+  border-color: #4c6ef5;
+}
+
+.day-chip.selected {
+  background: #4c6ef5;
+  border-color: #4c6ef5;
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(76, 110, 245, 0.4);
+}
+
+/* Reminder row */
+
+.reminder-row {
+  margin-top: 16px;
+}
+
+/* Actions */
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* Make buttons feel a bit more premium */
+
+.form-actions button[mat-stroked-button] {
+  border-radius: 9999px;
+  padding: 8px 22px;
+}
+
+.form-actions button[mat-raised-button] {
+  border-radius: 9999px;
+  padding: 8px 24px;
+  box-shadow: 0 18px 35px rgba(37, 99, 235, 0.45);
+}
+
+.form-actions button[mat-raised-button]:hover:not(:disabled) {
+  box-shadow: 0 22px 40px rgba(37, 99, 235, 0.65);
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+  .habit-form-page {
+    padding: 20px 16px;
+  }
+
+  .habit-form-card {
+    padding: 20px 18px 22px;
+  }
+
+  .row {
+    flex-direction: column;
+  }
+}

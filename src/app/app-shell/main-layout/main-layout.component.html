@@ -1,0 +1,83 @@
+<div class="app-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <!-- BRAND -->
+    <div>
+      <div class="brand">
+        <span class="brand-icon">⚡</span>
+        <span class="brand-text">HabitFlow</span>
+      </div>
+
+      <!-- MAIN NAVIGATION -->
+      <nav class="nav">
+
+        <a routerLink="/app/dashboard" routerLinkActive="active" class="nav-item">
+          <mat-icon>insights</mat-icon>
+          Dashboard
+        </a>
+
+        <a routerLink="/app/habits" routerLinkActive="active" class="nav-item">
+          <mat-icon>tune</mat-icon>
+          Habits
+        </a>
+
+        <a routerLink="/app/calendar" routerLinkActive="active" class="nav-item">
+          <mat-icon>calendar_today</mat-icon>
+          Calendar
+        </a>
+
+        <a routerLink="/app/stats" routerLinkActive="active" class="nav-item">
+          <mat-icon>query_stats</mat-icon>
+          Stats
+        </a>
+
+        <a routerLink="/app/profile" routerLinkActive="active" class="nav-item">
+          <mat-icon>person</mat-icon>
+          Profile
+        </a>
+      </nav>
+
+      <!-- SECTION LABEL -->
+      <div class="sidebar-label">INTELLIGENCE</div>
+
+      <!-- AI COACH -->
+      <nav class="nav nav-sub">
+        <a routerLink="/app/ai-coach"
+           routerLinkActive="active"
+           class="nav-item nav-intel">
+          <mat-icon>smart_toy</mat-icon>
+          AI Coach
+        </a>
+      </nav>
+
+      <!-- SECTION LABEL -->
+      <div class="sidebar-label">SUPPORT</div>
+
+      <!-- SUPPORT NAV -->
+      <nav class="nav nav-sub">
+        <a routerLink="/app/support"
+           routerLinkActive="active"
+           class="nav-item nav-support">
+          <mat-icon>support_agent</mat-icon>
+          Customer Support
+        </a>
+      </nav>
+
+    </div>
+
+    <!-- LOGOUT BUTTON -->
+    <button class="logout-btn" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Logout
+    </button>
+
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
+
+</div>
