@@ -1,4 +1,5 @@
+// environment.ts (development)
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:4000/api', // backend base URL
+  apiUrl: 'http://localhost:4000/api'
 };
