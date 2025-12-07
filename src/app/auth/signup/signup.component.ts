@@ -22,7 +22,17 @@ export class SignupComponent {
     this.signupForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(8),
+          // At least 1 upper, 1 lower, 1 digit, 1 special char
+          Validators.pattern(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/
+          ),
+        ],
+      ],
     });
   }
 
@@ -35,35 +45,39 @@ export class SignupComponent {
     this.loading = true;
     this.errorMessage = null;
 
-    const payload = this.signupForm.value;
+    const raw = this.signupForm.value;
+    const payload = {
+      name: raw.name.trim(),
+      email: raw.email.trim().toLowerCase(),
+      password: raw.password
+    };
 
     this.auth.signup(payload).subscribe({
       next: () => {
         this.loading = false;
-        alert('Signup successful! Please login.');
-        this.router.navigate(['/auth/login']);
+        // show success on login page
+        this.router.navigate(['/auth/login'], {
+          queryParams: { registered: 'true' }
+        });
       },
       error: (err) => {
         this.loading = false;
-        this.errorMessage =
-          err?.error?.message ||
-          'Signup failed. Please check your details and try again.';
-        alert(this.errorMessage);
+
+        if (err?.status === 0) {
+          this.errorMessage =
+            'Unable to reach server. Please check your connection and try again.';
+        } else if (err?.status === 409 || err?.error?.message === 'Email already registered') {
+          this.errorMessage = 'Email already registered. Try logging in instead.';
+        } else {
+          this.errorMessage =
+            err?.error?.message ||
+            'Signup failed. Please check your details and try again.';
+        }
       },
     });
   }
 
-  // ✅ These getters are required for the template: name, email, password
-
-  get name() {
-    return this.signupForm.get('name');
-  }
-
-  get email() {
-    return this.signupForm.get('email');
-  }
-
-  get password() {
-    return this.signupForm.get('password');
-  }
+  get name() { return this.signupForm.get('name'); }
+  get email() { return this.signupForm.get('email'); }
+  get password() { return this.signupForm.get('password'); }
 }

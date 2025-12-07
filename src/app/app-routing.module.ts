@@ -26,7 +26,7 @@ const routes: Routes = [
   { path: 'login', redirectTo: 'auth/login', pathMatch: 'full' },
   { path: 'signup', redirectTo: 'auth/signup', pathMatch: 'full' },
 
-  // Protected app shell (/app/...)
+  // 🔐 Protected app shell (/app/...) – only for logged-in users
   {
     path: 'app',
     canActivate: [AuthGuard],

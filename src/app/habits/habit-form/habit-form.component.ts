@@ -7,12 +7,11 @@ interface HabitFormModel {
   title: string;
   description?: string;
   frequency: 'daily' | 'weekly' | 'custom';
-  days: number[];          // 0-6 for Sun–Sat (UI only for now)
-  timeOfDay?: string;      // UI only for now
+  days: number[];
+  timeOfDay?: string;      // "HH:mm"
   reminder: boolean;       // maps to reminderEnabled
 }
 
-// 🔹 For AI-style suggestions
 interface HabitSuggestion {
   id: number;
   title: string;
@@ -30,6 +29,7 @@ interface HabitSuggestion {
   styleUrls: ['./habit-form.component.css'],
 })
 export class HabitFormComponent implements OnInit {
+  
   model: HabitFormModel = {
     title: '',
     description: '',
@@ -39,11 +39,10 @@ export class HabitFormComponent implements OnInit {
     reminder: false,
   };
 
-  isEdit = false;          // (we will use this later for edit mode)
+  isEdit = false;
   isSubmitting = false;
   errorMsg = '';
 
-  // 🔹 All available suggestions
   allSuggestions: HabitSuggestion[] = [
     {
       id: 1,
@@ -97,29 +96,20 @@ export class HabitFormComponent implements OnInit {
     },
   ];
 
-  // 🔹 What we actually display in UI
   suggestedHabits: HabitSuggestion[] = [];
 
   constructor(
-    private habitApi: HabitApiService,   // ✅ real backend service
+    private habitApi: HabitApiService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    // later we can use :id for edit mode
-    // const id = this.route.snapshot.paramMap.get('id');
-
-    // Show first 4 suggestions for now
     this.suggestedHabits = this.allSuggestions.slice(0, 4);
   }
 
-  // --- Day selection helpers ---
-
   toggleDay(dayIndex: number): void {
-    if (!this.model.days) {
-      this.model.days = [];
-    }
+    if (!this.model.days) this.model.days = [];
 
     if (this.model.days.includes(dayIndex)) {
       this.model.days = this.model.days.filter((d) => d !== dayIndex);
@@ -132,14 +122,10 @@ export class HabitFormComponent implements OnInit {
     return this.model.days?.includes(dayIndex) ?? false;
   }
 
-  // 🔹 User clicks "Use this habit" from suggestions
   useSuggestion(suggestion: HabitSuggestion): void {
     this.model.title = suggestion.title;
     this.model.description = suggestion.description;
-
-    if (suggestion.frequency) {
-      this.model.frequency = suggestion.frequency;
-    }
+    this.model.frequency = suggestion.frequency;
 
     if (suggestion.timeOfDay) {
       this.model.timeOfDay = suggestion.timeOfDay;
@@ -154,8 +140,7 @@ export class HabitFormComponent implements OnInit {
     }
   }
 
-  // --- Form submission -> REAL BACKEND ---
-
+  // --- Submit to backend ---
   onSubmit(): void {
     this.errorMsg = '';
 
@@ -165,30 +150,40 @@ export class HabitFormComponent implements OnInit {
       return;
     }
 
+    // If reminder toggle is ON, time must be selected
+    if (this.model.reminder && !this.model.timeOfDay) {
+      this.errorMsg = 'Please choose a time for your reminder.';
+      return;
+    }
+
     this.isSubmitting = true;
 
-    // 🔥 Call backend /api/habits/create (HabitApiService)
-    this.habitApi
-      .createHabit({
-        title,
-        description: this.model.description?.trim() || '',
-        frequency: this.model.frequency,
-        // startDate: optional → default = today in backend (if you want, we can add)
-      })
-      .subscribe({
-        next: (res) => {
-          this.isSubmitting = false;
-          // Optionally show toast here later
-          // Navigate back to habits list
-          this.router.navigate(['/app/habits']);
-        },
-        error: (err) => {
-          console.error('CREATE HABIT ERROR', err);
-          this.isSubmitting = false;
-          this.errorMsg =
-            err?.error?.message || 'Failed to create habit. Please try again.';
-        },
-      });
+    // Final payload to backend
+    const payload: any = {
+      title,
+      description: this.model.description?.trim() || '',
+      frequency: this.model.frequency,
+
+      // 🔥 IMPORTANT: send both fields for backend
+      timeOfDay: this.model.timeOfDay || '',
+      reminderEnabled: this.model.reminder,
+      reminderTime: this.model.reminder ? this.model.timeOfDay : '',
+
+      // (Optional future feature: send days)
+    };
+
+    this.habitApi.createHabit(payload).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        this.router.navigate(['/app/habits']);
+      },
+      error: (err) => {
+        console.error('CREATE HABIT ERROR', err);
+        this.isSubmitting = false;
+        this.errorMsg =
+          err?.error?.message || 'Failed to create habit. Please try again.';
+      },
+    });
   }
 
   onCancel(): void {

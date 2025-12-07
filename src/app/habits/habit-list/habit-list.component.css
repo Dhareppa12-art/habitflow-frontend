@@ -111,6 +111,27 @@
   color: #6b7280;
 }
 
+/* 🔔 Reminder row under title */
+.habit-reminder-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 13px;
+  color: #4b5563;
+  opacity: 0.95;
+}
+
+.habit-reminder-row .reminder-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.habit-reminder-row .reminder-text {
+  font-weight: 500;
+}
+
 /* Actions */
 
 .habit-actions {

@@ -57,9 +57,6 @@
           <div *ngIf="loadingProfile" class="info-text">
             Loading your profile…
           </div>
-          <div *ngIf="!loadingProfile && errorMsg" class="error-text">
-            {{ errorMsg }}
-          </div>
         </div>
 
         <!-- Avatar block -->
@@ -106,6 +103,16 @@
           >
             Remove photo
           </button>
+        </div>
+      </div>
+
+      <!-- Global status messages (for ALL sections) -->
+      <div class="status-row" *ngIf="errorMsg || successMsg">
+        <div *ngIf="errorMsg" class="error-text">
+          {{ errorMsg }}
+        </div>
+        <div *ngIf="successMsg" class="success-text">
+          {{ successMsg }}
         </div>
       </div>
 
@@ -235,9 +242,7 @@
             <select [(ngModel)]="settings.timezone">
               <option value="Asia/Kolkata">Asia/Kolkata</option>
               <option value="UTC">UTC</option>
-              <option value="America/New_York">America/New_York">
-                America/New_York
-              </option>
+              <option value="America/New_York">America/New_York</option>
               <option value="Europe/London">Europe/London</option>
             </select>
           </div>

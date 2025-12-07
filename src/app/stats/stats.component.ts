@@ -60,9 +60,7 @@ export class StatsComponent implements OnInit {
     this.loadStats();
   }
 
-  // =====================================================
   // LOAD + BUILD STATS FROM BACKEND HABITS
-  // =====================================================
 
   private loadStats(): void {
     this.loading = true;
@@ -100,17 +98,19 @@ export class StatsComponent implements OnInit {
 
     // Helpers
     const today = new Date();
-    const todayIso = this.toIsoDate(today);
+    const todayKey = this.toLocalDayKey(today); // yyyy-mm-dd in LOCAL time
 
     const last30Start = new Date();
     last30Start.setDate(today.getDate() - 29);
+    last30Start.setHours(0, 0, 0, 0);
+
     const weekStart = this.getMonday(today); // week view: Mon–Sun
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekStart.getDate() + 6);
+    weekEnd.setHours(23, 59, 59, 999);
 
     const monthYear = today.getFullYear();
     const monthIndex = today.getMonth();
-    const firstOfMonth = new Date(monthYear, monthIndex, 1);
 
     // Aggregation buckets
     const weeklyCounts = [0, 0, 0, 0, 0, 0, 0]; // Mon..Sun
@@ -120,31 +120,32 @@ export class StatsComponent implements OnInit {
     let bestStreak = 0;
     let topHabitData: { name: string; streak: number; total: number }[] = [];
 
+    //  How many active habits are done today?
+    let todayDoneCount = 0;
+
     // Process each habit
     for (const habit of activeHabits) {
       const rawDates = habit.completedDates || [];
-      const normalizedDates = rawDates.map((d) => this.normalizeDateStr(d));
-      const dateSet = new Set(normalizedDates);
+      const normalizedKeys: string[] = [];
+      let totalForHabit = 0;
+      let habitHasToday = false;
 
-      // streak for this habit
-      const streak = this.calculateStreak(dateSet);
-      if (streak > bestStreak) {
-        bestStreak = streak;
-      }
-
-      const totalForHabit = normalizedDates.length;
-      topHabitData.push({
-        name: habit.title,
-        streak,
-        total: totalForHabit,
-      });
-
-      // per-date work
-      for (const iso of normalizedDates) {
-        const d = new Date(iso); // iso "yyyy-mm-dd"
+      for (const raw of rawDates) {
+        const d = new Date(raw);
         if (isNaN(d.getTime())) continue;
 
-        // last 30 days
+        totalForHabit++;
+
+        // LOCAL day key, ex: "2025-12-06"
+        const key = this.toLocalDayKey(d);
+        normalizedKeys.push(key);
+
+        // check “done today”
+        if (key === todayKey) {
+          habitHasToday = true;
+        }
+
+        // last 30 days (for insights only)
         if (d >= last30Start && d <= today) {
           completionsLast30++;
         }
@@ -164,12 +165,38 @@ export class StatsComponent implements OnInit {
           monthlyWeekCounts[bucket]++;
         }
       }
+
+      const dateSet = new Set(normalizedKeys);
+
+      // streak for this habit (using LOCAL day keys)
+      const streak = this.calculateStreak(dateSet);
+      if (streak > bestStreak) {
+        bestStreak = streak;
+      }
+
+      topHabitData.push({
+        name: habit.title,
+        streak,
+        total: totalForHabit,
+      });
+
+      if (habitHasToday) {
+        todayDoneCount++;
+      }
     }
 
-    // completion rate: completions in last 30 days / (activeHabits * 30)
-    const possible = this.activeHabits * 30;
+    // NEW COMPLETION RATE: "how many active habits done today?"
     this.completionRate =
-      possible > 0 ? Math.round((completionsLast30 / possible) * 100) : 0;
+      this.activeHabits > 0
+        ? Math.round((todayDoneCount / this.activeHabits) * 100)
+        : 0;
+
+    /*
+      OLD 30-DAY AVERAGE (kept here as reference, not used anymore):
+      const possible = this.activeHabits * 30;
+      this.completionRate =
+        possible > 0 ? Math.round((completionsLast30 / possible) * 100) : 0;
+    */
 
     this.bestStreak = bestStreak;
 
@@ -198,7 +225,7 @@ export class StatsComponent implements OnInit {
       percent: maxTotal > 0 ? Math.round((h.total / maxTotal) * 100) : 0,
     }));
 
-    // Quick insights
+    // Quick insights (still use completionsLast30 for long-term text)
     this.quickInsights = this.buildInsights(
       completionsLast30,
       weeklyCounts,
@@ -206,11 +233,7 @@ export class StatsComponent implements OnInit {
       bestStreak
     );
   }
-
-  // =====================================================
   // INSIGHTS + HELPERS
-  // =====================================================
-
   private buildInsights(
     completionsLast30: number,
     weeklyCounts: number[],
@@ -251,13 +274,12 @@ export class StatsComponent implements OnInit {
     return insights;
   }
 
-  private toIsoDate(d: Date): string {
-    return d.toISOString().split('T')[0];
-  }
-
-  private normalizeDateStr(dateStr: string): string {
-    // backend gives e.g. "2025-11-30T08:30:00.000Z"
-    return dateStr.split('T')[0];
+  // 🔹 LOCAL day key: yyyy-mm-dd
+  private toLocalDayKey(d: Date): string {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
   }
 
   private getMonday(d: Date): Date {
@@ -279,8 +301,8 @@ export class StatsComponent implements OnInit {
     const cursor = new Date();
 
     while (true) {
-      const iso = this.toIsoDate(cursor);
-      if (!completedSet.has(iso)) break;
+      const key = this.toLocalDayKey(cursor);
+      if (!completedSet.has(key)) break;
       streak++;
       cursor.setDate(cursor.getDate() - 1);
     }
@@ -288,9 +310,7 @@ export class StatsComponent implements OnInit {
     return streak;
   }
 
-  // -----------------------------------------------------
   // view toggle used by template
-  // -----------------------------------------------------
   setViewMode(mode: 'week' | 'month'): void {
     if (this.viewMode === mode) return;
     this.viewMode = mode;

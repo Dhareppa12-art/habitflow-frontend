@@ -47,6 +47,24 @@
             </span>
           </div>
 
+          <!-- 🔔 Reminder info row (only if reminderEnabled is true) -->
+          <div
+            class="habit-reminder-row"
+            *ngIf="habit.reminderEnabled"
+          >
+            <mat-icon
+              class="reminder-icon"
+              matTooltip="Email reminder enabled"
+            >
+              notifications_active
+            </mat-icon>
+            <span class="reminder-text">
+              Reminder at
+              {{ habit.reminderTime || habit.timeOfDay || 'set time' }}
+            </span>
+          </div>
+
+          <!-- Description -->
           <p class="habit-description" *ngIf="habit.description">
             {{ habit.description }}
           </p>

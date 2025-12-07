@@ -6,6 +6,8 @@ import {
 } from '../services/profile-api.service';
 import { AuthService } from '../core/auth.service';
 
+type ProfileSection = 'profile' | 'security' | 'notifications' | 'settings';
+
 interface UserProfile {
   name: string;
   email: string;
@@ -31,15 +33,12 @@ interface AppSettings {
   theme: 'light' | 'dark' | 'system';
 }
 
-type ProfileSection = 'profile' | 'security' | 'notifications' | 'settings';
-
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
 })
 export class ProfileComponent implements OnInit {
-  // ---- User profile loaded from backend ----
   user: UserProfile = {
     name: '',
     email: '',
@@ -49,21 +48,18 @@ export class ProfileComponent implements OnInit {
 
   joinedAt: string | null = null;
 
-  // ---- Security tab ----
   security: SecurityState = {
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
   };
 
-  // ---- Notifications tab ----
   notify: NotificationSettings = {
     emailReminders: true,
     dailyReminder: true,
     weeklySummary: false,
   };
 
-  // ---- App settings tab ----
   settings: AppSettings = {
     timezone: 'Asia/Kolkata',
     weekStart: 'monday',
@@ -72,12 +68,12 @@ export class ProfileComponent implements OnInit {
 
   activeSection: ProfileSection = 'profile';
 
-  // loading flags
   loadingProfile = true;
   saving = false;
-  errorMsg = '';
 
-  // avatar image (prefer backend; fallback localStorage)
+  errorMsg = '';
+  successMsg = '';
+
   avatarUrl: string | null = localStorage.getItem('hf_avatar');
 
   constructor(
@@ -85,7 +81,6 @@ export class ProfileComponent implements OnInit {
     private auth: AuthService
   ) {}
 
-  // --------- GETTERS ----------
   get usernameFirstLetter(): string {
     return this.user.name?.charAt(0).toUpperCase() || 'U';
   }
@@ -103,7 +98,6 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  // --------- INIT ----------
   ngOnInit(): void {
     const storedTheme = localStorage.getItem(
       'hf_theme_preference'
@@ -117,10 +111,11 @@ export class ProfileComponent implements OnInit {
     this.loadProfileFromBackend();
   }
 
-  // --------- LOAD PROFILE FROM BACKEND ----------
+  // ------------------ LOAD PROFILE ------------------
   private loadProfileFromBackend(): void {
     this.loadingProfile = true;
     this.errorMsg = '';
+    this.successMsg = '';
 
     this.profileApi.getProfile().subscribe({
       next: (res) => {
@@ -142,7 +137,7 @@ export class ProfileComponent implements OnInit {
         };
 
         this.settings = {
-          timezone: (u.timezone as string) || 'Asia/Kolkata',
+          timezone: u.timezone || 'Asia/Kolkata',
           weekStart: (u.weekStart as 'sunday' | 'monday') || 'monday',
           theme: (u.themePreference as 'light' | 'dark' | 'system') || 'system',
         };
@@ -152,7 +147,6 @@ export class ProfileComponent implements OnInit {
           localStorage.setItem('hf_avatar', u.avatar);
         }
 
-        this.applyThemeFromSettings();
         this.loadingProfile = false;
       },
       error: (err) => {
@@ -164,7 +158,7 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  // --------- AVATAR ----------
+  // ------------------ AVATAR ------------------
   openAvatarPicker(input: HTMLInputElement): void {
     input.click();
   }
@@ -179,13 +173,7 @@ export class ProfileComponent implements OnInit {
       this.avatarUrl = reader.result as string;
       localStorage.setItem('hf_avatar', this.avatarUrl || '');
 
-      // Save avatar to backend immediately
-      this.profileApi.updateProfile({ avatar: this.avatarUrl || '' }).subscribe({
-        next: () => {},
-        error: (err) => {
-          console.error('AVATAR UPDATE ERROR', err);
-        },
-      });
+      this.profileApi.updateProfile({ avatar: this.avatarUrl || '' }).subscribe();
     };
     reader.readAsDataURL(file);
   }
@@ -194,41 +182,30 @@ export class ProfileComponent implements OnInit {
     this.avatarUrl = null;
     localStorage.removeItem('hf_avatar');
 
-    this.profileApi.updateProfile({ avatar: '' }).subscribe({
-      next: () => {},
-      error: (err) => {
-        console.error('AVATAR CLEAR ERROR', err);
-      },
-    });
+    this.profileApi.updateProfile({ avatar: '' }).subscribe();
   }
 
-  // --------- SECTIONS ----------
+  // ------------------ SECTION SWITCH ------------------
   setSection(section: ProfileSection): void {
     this.activeSection = section;
+    this.errorMsg = '';
+    this.successMsg = '';
   }
 
-  // --------- THEME ----------
+  // ------------------ THEME ------------------
   onThemeChange(): void {
     this.applyThemeFromSettings();
-    this.profileApi
-      .updateProfile({ themePreference: this.settings.theme })
-      .subscribe({
-        next: () => {},
-        error: (err) => {
-          console.error('THEME UPDATE ERROR', err);
-        },
-      });
+    this.profileApi.updateProfile({ themePreference: this.settings.theme }).subscribe();
   }
 
   private applyThemeFromSettings(): void {
     const pref = this.settings.theme;
-    let effective: 'light' | 'dark';
 
+    let effective: 'light' | 'dark';
     if (pref === 'system') {
-      const mq = window.matchMedia
-        ? window.matchMedia('(prefers-color-scheme: dark)')
-        : null;
-      effective = mq && mq.matches ? 'dark' : 'light';
+      effective = window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light';
     } else {
       effective = pref;
     }
@@ -241,51 +218,40 @@ export class ProfileComponent implements OnInit {
     localStorage.setItem('hf_theme_preference', pref);
   }
 
-  // --------- SAVE BUTTON ----------
+  // ------------------ SAVE ROUTER ------------------
   onSave(): void {
-    if (this.activeSection === 'profile') {
-      this.saveProfileToBackend();
-    } else if (this.activeSection === 'security') {
-      this.changePasswordToBackend();
-    } else if (this.activeSection === 'notifications') {
-      this.saveNotificationsToBackend();
-    } else if (this.activeSection === 'settings') {
-      this.saveSettingsToBackend();
-    }
+    this.errorMsg = '';
+    this.successMsg = '';
+
+    if (this.activeSection === 'profile') this.saveProfile();
+    if (this.activeSection === 'security') this.updatePassword();
+    if (this.activeSection === 'notifications') this.saveNotifications();
+    if (this.activeSection === 'settings') this.saveSettings();
   }
 
-  // ---- Save: Profile ----
-  private saveProfileToBackend(): void {
+  // ------------------ PROFILE SAVE ------------------
+  private saveProfile(): void {
     const name = this.user.name.trim();
-    const location = this.user.location?.trim() || '';
-    const phone = this.user.phone?.trim() || '';
 
     if (!name) {
-      alert('Name is required.');
+      this.errorMsg = 'Name is required.';
       return;
     }
 
     this.saving = true;
-    this.errorMsg = '';
 
     this.profileApi
       .updateProfile({
         name,
-        location,
-        phone,
+        location: this.user.location?.trim() || '',
+        phone: this.user.phone?.trim() || '',
       })
       .subscribe({
         next: () => {
+          this.successMsg = 'Profile updated successfully.';
           this.saving = false;
-          alert('Profile updated successfully.');
-
-          this.auth.getMe().subscribe({
-            next: () => {},
-            error: () => {},
-          });
         },
         error: (err) => {
-          console.error('PROFILE UPDATE ERROR', err);
           this.errorMsg =
             err?.error?.message || 'Failed to update profile.';
           this.saving = false;
@@ -293,36 +259,40 @@ export class ProfileComponent implements OnInit {
       });
   }
 
-  // ---- Save: Security (change password) ----
-  private changePasswordToBackend(): void {
+  // ------------------ SECURITY / PASSWORD ------------------
+  private updatePassword(): void {
     const current = this.security.currentPassword.trim();
     const next = this.security.newPassword.trim();
     const confirm = this.security.confirmPassword.trim();
 
+    // If all blank → do nothing
+    if (!current && !next && !confirm) {
+      return;
+    }
+
     if (!current || !next || !confirm) {
-      alert('Please fill in all password fields.');
+      this.errorMsg = 'Please fill in all password fields.';
       return;
     }
 
     if (next.length < 6) {
-      alert('New password must be at least 6 characters long.');
+      this.errorMsg = 'New password must be at least 6 characters.';
       return;
     }
 
     if (next !== confirm) {
-      alert('New password and confirmation do not match.');
+      this.errorMsg = 'New password and confirmation do not match.';
       return;
     }
 
     this.saving = true;
-    this.errorMsg = '';
 
     this.auth
       .changePassword({ currentPassword: current, newPassword: next })
       .subscribe({
-        next: (res) => {
+        next: () => {
+          this.successMsg = 'Password updated successfully.';
           this.saving = false;
-          alert(res?.message || 'Password updated successfully.');
 
           this.security = {
             currentPassword: '',
@@ -331,19 +301,16 @@ export class ProfileComponent implements OnInit {
           };
         },
         error: (err) => {
-          console.error('CHANGE PASSWORD ERROR', err);
           this.errorMsg =
             err?.error?.message || 'Failed to update password.';
-          alert(this.errorMsg);
           this.saving = false;
         },
       });
   }
 
-  // ---- Save: Notifications ----
-  private saveNotificationsToBackend(): void {
+  // ------------------ NOTIFICATIONS ------------------
+  private saveNotifications(): void {
     this.saving = true;
-    this.errorMsg = '';
 
     this.profileApi
       .updateProfile({
@@ -353,11 +320,10 @@ export class ProfileComponent implements OnInit {
       })
       .subscribe({
         next: () => {
+          this.successMsg = 'Notification settings saved.';
           this.saving = false;
-          alert('Notification preferences saved.');
         },
         error: (err) => {
-          console.error('NOTIFICATIONS UPDATE ERROR', err);
           this.errorMsg =
             err?.error?.message || 'Failed to update notification settings.';
           this.saving = false;
@@ -365,10 +331,9 @@ export class ProfileComponent implements OnInit {
       });
   }
 
-  // ---- Save: Settings ----
-  private saveSettingsToBackend(): void {
+  // ------------------ APP SETTINGS ------------------
+  private saveSettings(): void {
     this.saving = true;
-    this.errorMsg = '';
 
     this.profileApi
       .updateProfile({
@@ -378,11 +343,10 @@ export class ProfileComponent implements OnInit {
       })
       .subscribe({
         next: () => {
+          this.successMsg = 'App settings saved.';
           this.saving = false;
-          alert('App settings saved.');
         },
         error: (err) => {
-          console.error('SETTINGS UPDATE ERROR', err);
           this.errorMsg =
             err?.error?.message || 'Failed to update app settings.';
           this.saving = false;

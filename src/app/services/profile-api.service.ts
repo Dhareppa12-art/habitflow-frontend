@@ -34,6 +34,7 @@ export interface ProfileResponse {
   providedIn: 'root',
 })
 export class ProfileApiService {
+  // e.g. http://localhost:4000/api/profile
   private baseUrl = `${environment.apiUrl}/profile`;
 
   constructor(private http: HttpClient) {}

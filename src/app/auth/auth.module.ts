@@ -5,6 +5,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthRoutingModule } from './auth-routing.module';
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 
 /* -------------------------
    ANGULAR MATERIAL MODULES
@@ -18,7 +20,9 @@ import { MatButtonModule } from '@angular/material/button';
 @NgModule({
   declarations: [
     LoginComponent,
-    SignupComponent
+    SignupComponent,
+    ForgotPasswordComponent,
+    ResetPasswordComponent,
   ],
   imports: [
     CommonModule,
@@ -26,11 +30,11 @@ import { MatButtonModule } from '@angular/material/button';
     ReactiveFormsModule,
     AuthRoutingModule,
 
-    // ⭐ REQUIRED FOR LOGIN & SIGNUP UI
+    //  REQUIRED FOR LOGIN & SIGNUP UI
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule
-  ]
+    MatButtonModule,
+  ],
 })
 export class AuthModule {}

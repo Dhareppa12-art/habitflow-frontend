@@ -10,16 +10,14 @@ export interface CurrentUser {
   role?: string;
 }
 
-// Backend usually returns:
-// { success, data: { token, user }, message? }
 interface RawAuthResponse {
   success?: boolean;
   data?: {
     token?: string;
     user?: CurrentUser;
   };
-  token?: string;            // fallback shape
-  user?: CurrentUser;        // fallback shape
+  token?: string;
+  user?: CurrentUser;
   message?: string;
 }
 
@@ -50,9 +48,7 @@ export class AuthService {
     }
   }
 
-  // --------------------------
-  // PUBLIC OBSERVABLE
-  // --------------------------
+  // ---------------------- PUBLIC OBSERVABLE ----------------------
   get currentUser$(): Observable<CurrentUser | null> {
     return this._currentUser$.asObservable();
   }
@@ -62,12 +58,11 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    const token = this.getToken();
+    return !!token;
   }
 
-  // --------------------------
-  // REAL BACKEND SIGNUP
-  // --------------------------
+  // ---------------------- SIGNUP ----------------------
   signup(payload: {
     name: string;
     email: string;
@@ -78,16 +73,12 @@ export class AuthService {
       .pipe(
         tap((res) => {
           console.log('[AUTH] signup response', res);
-          // If you want auto-login after signup, uncomment:
-          // const { user, token } = this.extractUserAndToken(res);
-          // if (user && token) this.saveAuth(user, token);
+          // we are not auto-logging in after signup on purpose
         })
       );
   }
 
-  // --------------------------
-  // REAL BACKEND LOGIN
-  // --------------------------
+  // ---------------------- LOGIN ----------------------
   login(payload: {
     email: string;
     password: string;
@@ -105,9 +96,7 @@ export class AuthService {
       );
   }
 
-  // --------------------------
-  // REAL BACKEND GET CURRENT USER
-  // --------------------------
+  // ---------------------- GET CURRENT USER ----------------------
   getMe(): Observable<CurrentUser> {
     return this.http.get<MeResponse>(`${this.baseUrl}/me`).pipe(
       tap((res) => {
@@ -118,13 +107,11 @@ export class AuthService {
           this._currentUser$.next(user);
         }
       }),
-      map((res) => (res.data as CurrentUser))
+      map((res) => res.data as CurrentUser)
     );
   }
 
-  // --------------------------
-  // CHANGE PASSWORD (SECURITY TAB)
-  // --------------------------
+  // ---------------------- CHANGE PASSWORD ----------------------
   changePassword(payload: {
     currentPassword: string;
     newPassword: string;
@@ -135,37 +122,45 @@ export class AuthService {
     );
   }
 
-  // --------------------------
-  // Helper: normalize backend auth shape
-  // --------------------------
-  private extractUserAndToken(res: RawAuthResponse): {
-    user: CurrentUser | null;
-    token: string | null;
-  } {
+  // ---------------------- FORGOT / RESET PASSWORD ----------------------
+  requestPasswordReset(
+    email: string
+  ): Observable<{ success?: boolean; message?: string }> {
+    return this.http.post<{ success?: boolean; message?: string }>(
+      `${this.baseUrl}/forgot-password`,
+      { email }
+    );
+  }
+
+  resetPassword(
+    token: string,
+    password: string
+  ): Observable<{ success?: boolean; message?: string }> {
+    return this.http.post<{ success?: boolean; message?: string }>(
+      `${this.baseUrl}/reset-password`,
+      { token, password }
+    );
+  }
+
+  // ---------------------- HELPERS ----------------------
+  private extractUserAndToken(
+    res: RawAuthResponse
+  ): { user: CurrentUser | null; token: string | null } {
     const token = res?.data?.token || res?.token || null;
     const user = res?.data?.user || res?.user || null;
     return { user, token };
   }
 
-  // --------------------------
-  // SAVE TOKEN + USER
-  // --------------------------
   private saveAuth(user: CurrentUser, token: string) {
     localStorage.setItem(this.tokenKey, token);
     localStorage.setItem(this.userKey, JSON.stringify(user));
     this._currentUser$.next(user);
   }
 
-  // --------------------------
-  // TOKEN FOR INTERCEPTOR
-  // --------------------------
   getToken(): string | null {
     return localStorage.getItem(this.tokenKey);
   }
 
-  // --------------------------
-  // LOGOUT
-  // --------------------------
   logout(): void {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.userKey);

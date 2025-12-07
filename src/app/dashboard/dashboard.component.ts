@@ -17,23 +17,23 @@ export class DashboardComponent implements OnInit {
   totalHabits = 0;
   todaysCompletions = 0;
 
-  today = '';   // we'll set in ngOnInit as local IST date
+  today = '';
 
   loading = true;
   errorMsg = '';
   greeting = '';
-  userName = 'there';  // default
+  userName = 'there';
 
   constructor(private habitApi: HabitApiService) {}
 
   ngOnInit(): void {
-    this.today = this.getDayString(new Date()); // local (IST) date only
+    this.today = this.getDayString(new Date());
     this.loadUser();
     this.setGreeting();
     this.loadHabits();
   }
 
-  // 👉 Build yyyy-mm-dd from a Date using LOCAL calendar (IST)
+  // 👉 Make yyyy-mm-dd in LOCAL timezone
   private getDayString(date: Date): string {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -41,7 +41,7 @@ export class DashboardComponent implements OnInit {
     return `${y}-${m}-${d}`;
   }
 
-  // 🔹 Load user data from localStorage (name/email)
+  // 🔹 Load user from localStorage
   private loadUser(): void {
     try {
       const rawUser =
@@ -57,7 +57,7 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  // 🔹 Dynamic greeting: morning / afternoon / evening / night
+  // 🔹 Greeting system
   private setGreeting(): void {
     const hour = new Date().getHours();
 
@@ -67,7 +67,7 @@ export class DashboardComponent implements OnInit {
     else this.greeting = 'Good night';
   }
 
-  // 🔹 Load all habits from backend
+  // 🔹 Load all habits
   private loadHabits() {
     this.loading = true;
 
@@ -84,12 +84,11 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // Normalize date to LOCAL yyyy-mm-dd (IST)
   private normalize(d: string): string {
     return this.getDayString(new Date(d));
   }
 
-  // 🔹 Calculate today's completions + streak + completion rate
+  //  NEW: CLEAN & SIMPLE DAILY COMPLETION RATE
   private calculateStats() {
     this.totalHabits = this.habits.length;
 
@@ -102,47 +101,51 @@ export class DashboardComponent implements OnInit {
     }
 
     let todayCount = 0;
-    let streakMax = 0;
-    let totalCompletions = 0;
+    let maxStreak = 0;
 
     for (const habit of this.habits) {
       const dates = (habit.completedDates || []).map((d: string) =>
         this.normalize(d)
       );
 
-      // ✅ LOCAL today's completions
+      // ✔ Count how many habits done today
       if (dates.includes(this.today)) todayCount++;
 
-      // longest streak
+      // ✔ Compute longest streak
       const streak = this.computeStreak(dates);
-      if (streak > streakMax) streakMax = streak;
-
-      // total completed for completion rate
-      totalCompletions += dates.length;
+      if (streak > maxStreak) maxStreak = streak;
     }
 
+    // Save today’s stats
     this.todayCompletions = todayCount;
-    this.todaysCompletions = todayCount; // UI uses this
-    this.bestStreak = streakMax;
+    this.todaysCompletions = todayCount;
+    this.bestStreak = maxStreak;
 
-    // Completion Rate (last 30 days)
-    const days = 30;
-    const possible = this.totalHabits * days;
-    const rawRate = possible > 0 ? (totalCompletions / possible) * 100 : 0;
+    //  NEW formula: simple daily rate
+    // completion = todayCompleted / totalHabits * 100
+    const rawRate = (todayCount / this.totalHabits) * 100;
 
     this.completionRate = Math.round(rawRate);
+
+    /*
+     OLD formula (confusing – always shows 3%)
+    const days = 30;
+    const possible = this.totalHabits * days;
+    const rawRateOld = possible > 0 ? (totalCompletions / possible) * 100 : 0;
+    this.completionRate = Math.round(rawRateOld);
+    */
   }
 
- 
+  // 🔹 Compute streak
   private computeStreak(dates: string[]): number {
     if (!dates.length) return 0;
 
-    const sorted = [...dates].sort(); 
+    const sorted = [...dates].sort();
     let streak = 0;
 
     let current = new Date();
     while (true) {
-      const check = this.getDayString(current); 
+      const check = this.getDayString(current);
       if (!sorted.includes(check)) break;
 
       streak++;

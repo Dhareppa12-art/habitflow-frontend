@@ -2,6 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HabitApiService, BackendHabit } from 'src/app/services/habit-api.service';
 
+// 🔥 Extend BackendHabit with reminder fields (for template)
+type HabitListHabit = BackendHabit & {
+  reminderEnabled?: boolean;
+  reminderTime?: string; // "HH:mm"
+  timeOfDay?: string;    // fallback/old field
+};
+
 @Component({
   selector: 'app-habit-list',
   templateUrl: './habit-list.component.html',
@@ -9,7 +16,7 @@ import { HabitApiService, BackendHabit } from 'src/app/services/habit-api.servic
 })
 export class HabitListComponent implements OnInit {
 
-  habits: BackendHabit[] = [];
+  habits: HabitListHabit[] = [];
   loading = true;
   errorMsg = '';
   today = '';   // local date key: YYYY-MM-DD
@@ -31,7 +38,7 @@ export class HabitListComponent implements OnInit {
 
     this.habitApi.getMyHabits().subscribe({
       next: (res) => {
-        this.habits = res.habits || [];
+        this.habits = (res as any).habits || [];
         this.loading = false;
       },
       error: (err) => {
@@ -58,7 +65,7 @@ export class HabitListComponent implements OnInit {
     return this.makeLocalDateKey(d);
   }
 
-  isCompletedToday(habit: BackendHabit): boolean {
+  isCompletedToday(habit: HabitListHabit): boolean {
     return (
       habit.completedDates?.some(
         (d) => this.normalizeDateStr(d) === this.today
@@ -66,7 +73,7 @@ export class HabitListComponent implements OnInit {
     );
   }
 
-  getStreak(habit: BackendHabit): number {
+  getStreak(habit: HabitListHabit): number {
     if (!habit.completedDates || habit.completedDates.length === 0)
       return 0;
 
@@ -90,7 +97,7 @@ export class HabitListComponent implements OnInit {
 
   // ---------- Actions ----------
 
-  markDone(habit: BackendHabit, event: Event) {
+  markDone(habit: HabitListHabit, event: Event) {
     event.stopPropagation();
 
     if (this.isCompletedToday(habit)) {
@@ -100,7 +107,7 @@ export class HabitListComponent implements OnInit {
 
     this.habitApi.checkInHabit(habit._id).subscribe({
       next: (res) => {
-        const updated = res.habit;
+        const updated = (res as any).habit as HabitListHabit;
         const idx = this.habits.findIndex(h => h._id === updated._id);
         if (idx !== -1) {
           this.habits[idx] = updated;   // 🔥 update array → Angular re-renders
@@ -113,7 +120,7 @@ export class HabitListComponent implements OnInit {
     });
   }
 
-  deleteHabit(habit: BackendHabit, event: Event) {
+  deleteHabit(habit: HabitListHabit, event: Event) {
     event.stopPropagation();
 
     if (!confirm('Delete this habit?')) return;
@@ -129,7 +136,7 @@ export class HabitListComponent implements OnInit {
     });
   }
 
-  openHabit(habit: BackendHabit) {
+  openHabit(habit: HabitListHabit) {
     this.router.navigate(['/app/habits', habit._id]);
   }
 

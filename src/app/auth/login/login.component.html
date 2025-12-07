@@ -20,9 +20,18 @@
         Log in to keep your habits, streaks and stats in sync.
       </p>
 
+      <!-- ✅ Success after signup -->
+      <p class="auth-banner success" *ngIf="successMessage">
+        {{ successMessage }}
+      </p>
+
+      <!-- Global error (invalid credentials, network, etc.) -->
+      <p class="auth-banner error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </p>
+
       <!-- Login form -->
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
-
         <!-- Email Field -->
         <div class="field">
           <label for="email">Email*</label>
@@ -31,14 +40,15 @@
             type="email"
             formControlName="email"
             placeholder="you@example.com"
+            autocomplete="email"
           />
 
           <div class="field-error" *ngIf="email?.touched && email?.invalid">
             <small *ngIf="email?.errors?.['required']">
-              Email is required
+              Email is required.
             </small>
             <small *ngIf="email?.errors?.['email']">
-              Please enter a valid email
+              Please enter a valid email address.
             </small>
           </div>
         </div>
@@ -51,22 +61,25 @@
             type="password"
             formControlName="password"
             placeholder="••••••••"
+            autocomplete="current-password"
           />
 
           <div class="field-error" *ngIf="password?.touched && password?.invalid">
             <small *ngIf="password?.errors?.['required']">
-              Password is required
+              Password is required.
             </small>
             <small *ngIf="password?.errors?.['minlength']">
-              Password must be at least 6 characters
+              Password must be at least 8 characters long.
             </small>
           </div>
         </div>
 
-        <!-- Global error -->
-        <p class="auth-error" *ngIf="errorMessage">
-          {{ errorMessage }}
-        </p>
+        <!-- Forgot password (RIGHT aligned) -->
+        <div class="field-meta">
+          <a routerLink="/auth/forgot-password" class="link-small">
+            Forgot password?
+          </a>
+        </div>
 
         <!-- Submit button -->
         <button
