@@ -1,23 +1,17 @@
-<!-- src/app/habits/habit-detail/habit-detail.component.html -->
-
 <div class="habit-detail-page">
-
-  <!-- Loading / error state -->
   <ng-container *ngIf="loading || errorMsg; else detailTpl">
     <div *ngIf="loading" class="info-text">Loading habit details...</div>
-    <div *ngIf="!loading && errorMsg" class="error-text">{{ errorMsg }}</div>
+    <div *ngIf="!loading && errorMsg" class="error-text">
+      {{ errorMsg }}
+    </div>
   </ng-container>
 
-  <!-- Main detail card -->
   <ng-template #detailTpl>
     <mat-card class="detail-card" *ngIf="habit">
-
       <!-- Header -->
       <div class="detail-header">
         <div class="header-left">
-          <button mat-button class="back-btn" (click)="goBack()">
-            ← Back
-          </button>
+          <button mat-button class="back-btn" (click)="goBack()">← Back</button>
 
           <div>
             <h1 class="habit-title">{{ habit.title }}</h1>
@@ -40,7 +34,7 @@
           <button
             mat-stroked-button
             color="warn"
-            (click)="deleteHabit()"
+            (click)="openDeleteHabitDialog()"
           >
             Delete Habit
           </button>
@@ -73,7 +67,7 @@
         </mat-card>
       </div>
 
-      <!-- Last 7 days -->
+      <!-- Last 7 Days -->
       <section class="last7-section">
         <h2 class="section-title">Last 7 Days</h2>
         <p class="section-subtitle">
@@ -93,7 +87,34 @@
           </div>
         </div>
       </section>
-
     </mat-card>
+  </ng-template>
+
+  <!-- 🔥 Inline Delete Confirmation Dialog -->
+  <ng-template #deleteHabitDialog>
+    <div class="hf-dialog">
+      <div class="hf-dialog-icon">⚠️</div>
+
+      <h2 class="hf-dialog-title">Delete this habit?</h2>
+
+      <p class="hf-dialog-message">
+        This habit and its progress will be removed permanently.
+      </p>
+
+      <div class="hf-dialog-actions">
+        <button mat-button class="hf-btn-secondary" (click)="closeDeleteHabitDialog()">
+          Cancel
+        </button>
+
+        <button
+          mat-raised-button
+          color="warn"
+          class="hf-btn-danger"
+          (click)="confirmDeleteHabit()"
+        >
+          Delete Habit
+        </button>
+      </div>
+    </div>
   </ng-template>
 </div>

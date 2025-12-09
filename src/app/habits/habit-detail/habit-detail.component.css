@@ -146,6 +146,53 @@
   font-size: 14px;
 }
 
+/* 🔥 Delete Dialog */
+
+.hf-dialog {
+  padding: 24px 24px 20px;
+  max-width: 380px;
+}
+
+.hf-dialog-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #fff4e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  font-size: 20px;
+}
+
+.hf-dialog-title {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.hf-dialog-message {
+  margin: 0 0 24px;
+  font-size: 14px;
+  color: #555;
+}
+
+.hf-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.hf-btn-secondary {
+  border-radius: 999px;
+  padding: 6px 18px;
+}
+
+.hf-btn-danger {
+  border-radius: 999px;
+  padding: 6px 22px;
+}
+
 /* Responsive */
 @media (max-width: 900px) {
   .detail-card {

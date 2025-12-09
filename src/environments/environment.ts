@@ -1,5 +1,5 @@
 // src/environments/environment.ts
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:4000/api'
+  apiUrl: 'https://habitflow-backend-1.onrender.com/api'
 };

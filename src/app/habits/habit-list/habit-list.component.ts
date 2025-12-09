@@ -1,29 +1,46 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
 import { Router } from '@angular/router';
-import { HabitApiService, BackendHabit } from 'src/app/services/habit-api.service';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
+import {
+  HabitApiService,
+  BackendHabit,
+} from 'src/app/services/habit-api.service';
 
 // 🔥 Extend BackendHabit with reminder fields (for template)
 type HabitListHabit = BackendHabit & {
   reminderEnabled?: boolean;
   reminderTime?: string; // "HH:mm"
-  timeOfDay?: string;    // fallback/old field
+  timeOfDay?: string; // fallback/old field
 };
 
 @Component({
   selector: 'app-habit-list',
   templateUrl: './habit-list.component.html',
-  styleUrls: ['./habit-list.component.css']
+  styleUrls: ['./habit-list.component.css'],
 })
 export class HabitListComponent implements OnInit {
-
   habits: HabitListHabit[] = [];
   loading = true;
   errorMsg = '';
-  today = '';   // local date key: YYYY-MM-DD
+  today = ''; // local date key: YYYY-MM-DD
+
+  // 👉 Dialog template + state
+  @ViewChild('deleteHabitDialog') deleteHabitDialog!: TemplateRef<any>;
+  habitToDelete: HabitListHabit | null = null;
+  private deleteDialogRef?: MatDialogRef<any>;
 
   constructor(
     private habitApi: HabitApiService,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -44,8 +61,10 @@ export class HabitListComponent implements OnInit {
       error: (err) => {
         console.error('LOAD HABITS ERROR', err);
         this.loading = false;
-        this.errorMsg = err?.error?.message || 'Something went wrong while loading habits.';
-      }
+        this.errorMsg =
+          err?.error?.message ||
+          'Something went wrong while loading habits.';
+      },
     });
   }
 
@@ -74,12 +93,13 @@ export class HabitListComponent implements OnInit {
   }
 
   getStreak(habit: HabitListHabit): number {
-    if (!habit.completedDates || habit.completedDates.length === 0)
-      return 0;
+    if (!habit.completedDates || habit.completedDates.length === 0) return 0;
 
-    const dates = [...new Set(
-      habit.completedDates.map((d) => this.normalizeDateStr(d))
-    )].sort();  // YYYY-MM-DD sorts correctly
+    const dates = [
+      ...new Set(
+        habit.completedDates.map((d) => this.normalizeDateStr(d))
+      ),
+    ].sort(); // YYYY-MM-DD sorts correctly
 
     let streak = 0;
     let current = new Date();
@@ -108,32 +128,58 @@ export class HabitListComponent implements OnInit {
     this.habitApi.checkInHabit(habit._id).subscribe({
       next: (res) => {
         const updated = (res as any).habit as HabitListHabit;
-        const idx = this.habits.findIndex(h => h._id === updated._id);
+        const idx = this.habits.findIndex((h) => h._id === updated._id);
         if (idx !== -1) {
-          this.habits[idx] = updated;   // 🔥 update array → Angular re-renders
+          this.habits[idx] = updated; // 🔥 update array → Angular re-renders
         }
       },
       error: (err) => {
         console.error('CHECK-IN ERROR', err);
         alert(err?.error?.message || 'Failed to mark habit as done.');
-      }
+      },
     });
   }
 
-  deleteHabit(habit: HabitListHabit, event: Event) {
-    event.stopPropagation();
+  // ---------- Delete flow (SaaS style) ----------
 
-    if (!confirm('Delete this habit?')) return;
+  /** Open Material dialog instead of window.confirm */
+  openDeleteHabitDialog(habit: HabitListHabit, event: Event) {
+    event.stopPropagation();
+    this.habitToDelete = habit;
+
+    this.deleteDialogRef = this.dialog.open(this.deleteHabitDialog, {
+      width: '380px',
+    });
+  }
+
+  /** Called when user clicks "Delete habit" button in dialog */
+  confirmDeleteHabit() {
+    if (!this.habitToDelete) return;
+
+    const habit = this.habitToDelete;
 
     this.habitApi.deleteHabit(habit._id).subscribe({
       next: () => {
-        this.habits = this.habits.filter(h => h._id !== habit._id);
+        this.habits = this.habits.filter((h) => h._id !== habit._id);
+        this.snackBar.open('Habit deleted', 'Close', { duration: 2500 });
+        this.closeDeleteHabitDialog();
       },
       error: (err) => {
         console.error('DELETE HABIT ERROR', err);
-        alert(err?.error?.message || 'Failed to delete habit.');
-      }
+        this.snackBar.open(
+          err?.error?.message || 'Failed to delete habit.',
+          'Close',
+          { duration: 3000 }
+        );
+        this.closeDeleteHabitDialog();
+      },
     });
+  }
+
+  /** Close dialog & clear state */
+  closeDeleteHabitDialog() {
+    this.deleteDialogRef?.close();
+    this.habitToDelete = null;
   }
 
   openHabit(habit: HabitListHabit) {

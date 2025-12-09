@@ -1,5 +1,4 @@
 <div class="habits-container">
-
   <!-- Header -->
   <div class="habits-header">
     <h1 class="page-title">Habits</h1>
@@ -24,7 +23,6 @@
 
   <!-- Habits grid -->
   <div class="habits-grid" *ngIf="!loading && habits && habits.length">
-
     <mat-card
       class="habit-card"
       *ngFor="let habit of habits"
@@ -33,25 +31,18 @@
       <!-- Top row: title + actions -->
       <div class="habit-card-header">
         <div>
-
           <!-- title + done-today badge -->
           <div class="habit-title-row">
             <h2 class="habit-title">{{ habit.title }}</h2>
 
-            <span
-              *ngIf="isCompletedToday(habit)"
-              class="today-badge"
-            >
+            <span *ngIf="isCompletedToday(habit)" class="today-badge">
               <mat-icon>check_circle</mat-icon>
               Done today
             </span>
           </div>
 
           <!-- 🔔 Reminder info row (only if reminderEnabled is true) -->
-          <div
-            class="habit-reminder-row"
-            *ngIf="habit.reminderEnabled"
-          >
+          <div class="habit-reminder-row" *ngIf="habit.reminderEnabled">
             <mat-icon
               class="reminder-icon"
               matTooltip="Email reminder enabled"
@@ -82,7 +73,7 @@
           <button
             mat-icon-button
             color="warn"
-            (click)="deleteHabit(habit, $event)"
+            (click)="openDeleteHabitDialog(habit, $event)"
             matTooltip="Delete habit"
           >
             <mat-icon>delete</mat-icon>
@@ -93,14 +84,19 @@
       <!-- Chips row: modern Pending + Streak -->
       <div class="habit-meta">
         <mat-chip-listbox>
-
           <!-- Pending / Done chip -->
           <mat-chip
             class="status-chip"
-            [ngClass]="isCompletedToday(habit) ? 'chip-done' : 'chip-pending'"
+            [ngClass]="
+              isCompletedToday(habit) ? 'chip-done' : 'chip-pending'
+            "
           >
             <mat-icon>
-              {{ isCompletedToday(habit) ? 'check_circle' : 'radio_button_unchecked' }}
+              {{
+                isCompletedToday(habit)
+                  ? 'check_circle'
+                  : 'radio_button_unchecked'
+              }}
             </mat-icon>
             {{ isCompletedToday(habit) ? 'Done Today' : 'Pending' }}
           </mat-chip>
@@ -110,7 +106,6 @@
             <mat-icon>trending_up</mat-icon>
             {{ getStreak(habit) }}-day streak
           </mat-chip>
-
         </mat-chip-listbox>
       </div>
 
@@ -118,11 +113,10 @@
       <div class="habit-footer">
         <div class="habit-status">
           Last completed:
-          <ng-container *ngIf="habit.completedDates as completedDates; else neverTpl">
-            {{
-              completedDates[completedDates.length - 1]
-                | date : 'MMM d'
-            }}
+          <ng-container
+            *ngIf="habit.completedDates as completedDates; else neverTpl"
+          >
+            {{ completedDates[completedDates.length - 1] | date: 'MMM d' }}
           </ng-container>
           <ng-template #neverTpl>Never</ng-template>
         </div>
@@ -134,11 +128,43 @@
           [disabled]="isCompletedToday(habit)"
           (click)="markDone(habit, $event)"
         >
-          {{ isCompletedToday(habit) ? 'Done for today' : 'Mark done today' }}
+          {{
+            isCompletedToday(habit) ? 'Done for today' : 'Mark done today'
+          }}
         </button>
       </div>
-
     </mat-card>
-
   </div>
+
+  <!-- 🔥 Inline Material delete-confirm dialog -->
+  <ng-template #deleteHabitDialog>
+    <div class="hf-dialog">
+      <div class="hf-dialog-icon">⚠️</div>
+
+      <h2 class="hf-dialog-title">Delete this habit?</h2>
+
+      <p class="hf-dialog-message">
+        This habit and its progress will be removed permanently.
+      </p>
+
+      <div class="hf-dialog-actions">
+        <button
+          mat-button
+          class="hf-btn-secondary"
+          (click)="closeDeleteHabitDialog()"
+        >
+          Cancel
+        </button>
+
+        <button
+          mat-raised-button
+          color="warn"
+          class="hf-btn-danger"
+          (click)="confirmDeleteHabit()"
+        >
+          Delete habit
+        </button>
+      </div>
+    </div>
+  </ng-template>
 </div>

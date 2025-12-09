@@ -17,13 +17,16 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
     HabitListComponent,
     HabitItemComponent,
     HabitFormComponent,
-    HabitDetailComponent
+    HabitDetailComponent,
   ],
   imports: [
     CommonModule,
@@ -38,7 +41,10 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatSlideToggleModule
-  ]
+    MatSlideToggleModule,
+    MatDialogModule,
+    MatSnackBarModule,
+    MatTooltipModule,
+  ],
 })
 export class HabitsModule {}
