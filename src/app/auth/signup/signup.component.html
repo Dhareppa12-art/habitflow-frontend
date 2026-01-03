@@ -32,13 +32,7 @@
         <!-- Name -->
         <div class="field">
           <label for="name">Name*</label>
-          <input
-            id="name"
-            type="text"
-            formControlName="name"
-            placeholder="Your name"
-            autocomplete="name"
-          />
+          <input id="name" type="text" formControlName="name" placeholder="Your name" autocomplete="name"/>
           <div class="field-error" *ngIf="name?.touched && name?.invalid">
             <small *ngIf="name?.errors?.['required']">
               Name is required.
@@ -100,10 +94,7 @@
 
         <!-- Submit button -->
         <button
-          type="submit"
-          class="primary-btn"
-          [disabled]="signupForm.invalid || loading"
-        >
+          type="submit" class="primary-btn" [disabled]="signupForm.invalid || loading">
           <span *ngIf="!loading">Sign up</span>
           <span *ngIf="loading">Creating account...</span>
         </button>

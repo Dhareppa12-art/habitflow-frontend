@@ -14,11 +14,7 @@ export class SignupComponent {
   loading = false;
   errorMessage: string | null = null;
 
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private auth: AuthService
-  ) {
+  constructor(  private fb: FormBuilder, private router: Router, private auth: AuthService) {
     this.signupForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
@@ -46,6 +42,7 @@ export class SignupComponent {
     this.errorMessage = null;
 
     const raw = this.signupForm.value;
+    //console.log(raw)
     const payload = {
       name: raw.name.trim(),
       email: raw.email.trim().toLowerCase(),

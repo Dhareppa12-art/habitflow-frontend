@@ -8,9 +8,8 @@ import { SignupComponent } from './signup/signup.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 
-/* -------------------------
-   ANGULAR MATERIAL MODULES
---------------------------*/
+
+// ANGULAR MATERIAL MODULES
 
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';

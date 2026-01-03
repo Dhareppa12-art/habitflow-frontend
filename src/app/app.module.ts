@@ -9,10 +9,10 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgChartsModule } from 'ng2-charts';
 
-// 🔐 Interceptor
+// Interceptor
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 
-// 🌟 Angular Material Modules
+// Angular Material Modules
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
