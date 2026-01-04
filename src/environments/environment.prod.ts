@@ -1,6 +1,5 @@
 // src/environments/environment.prod.ts
 export const environment = {
   production: true,
-  apiUrl: 'http://13.60.232.214/api'
+  apiUrl: 'https://habitflow-api-bebtbgadyphdhd3.centralindia-01.azurewebsites.net'
 };
-
